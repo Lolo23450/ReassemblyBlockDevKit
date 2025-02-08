@@ -83,7 +83,7 @@
         }
 
         function selectBlock(typeargs, generalargs) {
-            renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower: 5, lasercolor: "#ffffff", turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 3000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000", density: 1, shroudsize: 2, shroudoffset: "{0,0,0}", shroudtaper: 1, shroudshape: "SQUARE", tractorRange: 500});
+            renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower: 5, lasercolor: "#ffffff", turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 30000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000", density: 1, shroudsize: 2, shroudoffset: "{0,0,0}", shroudtaper: 1, shroudshape: "SQUARE", tractorRange: 500});
         }
 
         function renderAttributes(block) {
@@ -431,9 +431,10 @@
                 luaCode += `        powerCapacity = ${block.powerCapacity},\n`;
                 luaCode += `        generatorCapacityPerSec = ${block.generatorCapacityPerSec},\n`;
             } else if (block.typeargs === 'Command') {
-                luaCode += `        features = COMMAND|ASSEMBLER,\n`;
+                luaCode += `        features = COMMAND|ASSEMBLER|TRACTOR,\n`;
                 luaCode += `        command = {\n`;
                 luaCode += `            faction = ${block.faction},\n`;
+                luaCode += `        tractorRange = 600,\n`;
                 luaCode += `        },\n`;
             } else if (block.typeargs === 'Thruster') {
                 luaCode += `        features = PALETTE|THRUSTER,\n`;
