@@ -8,7 +8,7 @@
         body { font-family: Arial, sans-serif; padding: 20px; background: white; color: black; transition: background 0.3s, color 0.3s; }
         .container { display: flex; }
         .panel { width: 50%; padding: 10px; border: 1px solid #c0bcbc; margin-right: 10px; background: white; transition: background 0.3s; }
-        .block-list button { display: block; margin: 6px; padding: 10px; width: 97%; transition: background 0.2s, color 0.2s; }
+        .block-list button { display: block; margin: 6px; padding: 10px; width: 97%; transition: background 0.25s, color 0.25s; }
         .attribute-section { margin-top: 10px; }
         label { width: 97%; display: block; margin-top: 5px; }
         input, select { width: 100%; padding: 5px; margin-bottom: 5px; }
@@ -21,6 +21,7 @@
         
         /* Dark Mode Styles */
         body.dark-mode { background: #1e1e1e; color: white; }
+        /* input.dark-mode, select { width: 100%; padding: 5px; margin-bottom: 5px; background: #1e1e1e; color: white; transition: background 0.25s, color 0.25s; } */
         .panel.dark-mode { background: #333; border-color: #666; }
         .block-list.dark-mode button { display: block; margin: 6px; padding: 10px; width: 97%; background: #1e1e1e; color: white;}
         .dark-mode #creditsPopup {display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e1e1e; padding: 20px; border: 1px solid black; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); }
@@ -69,6 +70,7 @@
         function toggleDarkMode() {
             document.body.classList.toggle("dark-mode");
             document.querySelectorAll(".panel").forEach(panel => panel.classList.toggle("dark-mode"));
+            document.querySelectorAll("input").forEach(input => input.classList.toggle("dark-mode"))
             document.getElementById('creditsPopup').classList.toggle('dark-mode');
         }
 
@@ -206,7 +208,7 @@
             shroudList.appendChild(shroudItem);
 
             block.shrouds.push({
-                size: "{10,10}",
+                size: "{5,5}",
                 offset: "{0,0,0}",
                 taper: 1,
                 shape: "SQUARE"
