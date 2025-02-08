@@ -192,8 +192,13 @@
                 <label>Offset: <input type="text" class="shroud-offset" value="{0,0,0}" data-index="${shroudIndex}"></label>
                 <label>Taper: <input type="number" class="shroud-taper" value="1" data-index="${shroudIndex}"></label>
                 <label>Shape: <select class="shroud-shape" data-index="${shroudIndex}">
+                    <option value="TRI">TRI</option>
                     <option value="SQUARE">SQUARE</option>
+                    <option value="PENTAGON">PENTAGON</option>
                     <option value="HEXAGON">HEXAGON</option>
+                    <option value="HEPTAGON">HEPTAGON</option>
+                    <option value="OCTAGON">OCTAGON</option>
+                    <option value="COMMAND">COMMAND</option>
                 </select></label>
                 <button onclick="removeShroud(${shroudIndex})">Remove</button>
             `;
