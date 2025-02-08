@@ -23,7 +23,7 @@
     <h1>Reassembly Block Development Kit</h1>
     <button id="creditsBtn" onclick="showCredits()">Credits</button>
     <button id="exportBtn" onclick="exportBlocks()">Export blocks.lua</button>
-    <button id="loadBtn" onclick="loadBlocks()">Load blocks.lua</button>
+    <button id="loadBtn" onclick="loadBlocks()">Load blocks.lua (WIP)</button>
     <div id="creditsPopup">
         <h2>Credits</h2>
         <p>Developed by: Lolo</p>
@@ -46,6 +46,9 @@
             <h3>Block Attributes</h3>
             <div id="blockattributes"></div>
             <div id="attributes"></div>
+            <h3>Shrouds</h3>
+            <ul id="shroudList"></ul>
+            <button id="exportBtn" onclick="exportBlocks()">Export blocks.lua</button>
         </div>
         <div class="panel block-list">
             <h3>Created Blocks</h3>
@@ -65,12 +68,13 @@
         }
 
         function selectBlock(typeargs, generalargs) {
-            renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower:5 , turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 3000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000" });
+            renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower:5 , turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 3000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000", density: 1, shroudsize: 2, shroudoffset: "{0,0,0}", shroudtaper: 1, shroudshape: "SQUARE"});
         }
 
         function renderAttributes(block) {
             const featureAttributesDiv = document.getElementById('attributes');
             const blockAttributesDiv = document.getElementById('blockattributes');
+            const shroudList = document.getElementById('shroudList');
             featureAttributesDiv.innerHTML = `<h4>${block.typeargs} Attributes</h4>`;
             blockAttributesDiv.innerHTML = `<h5>General Attributes</h5>`;
             let blockAttributesHTML = `<label>Name: <input type="text" id="name" value="${block.name}"></label>`;
@@ -79,11 +83,14 @@
             blockAttributesHTML += `<label>Shape: <input type="text" id="shape" value="${block.shape}"></label>`;
             blockAttributesHTML += `<label>Size: <input type="number" id="size" value="${block.size}"></label>`;
             blockAttributesHTML += `<label>Health Multiplier: <input type="number" id="health" value="${block.health}"></label>`;
+            blockAttributesHTML += `<label>Density/Mass Multiplier: <input type="number" id="density" value="${block.density}"></label>`;
             blockAttributesHTML += `<label>Capacity: <input type="number" id="capacity" value="${block.capacity}"></label>`;
             blockAttributesHTML += `<label>P Cost: <input type="number" id="points" value="${block.points}"></label>`;
             blockAttributesHTML += `<label>Fill Color 1: <input type="color" id="fillColor1" value="${block.fillColor1}"></label>`;
             blockAttributesHTML += `<label>Fill Color 2: <input type="color" id="fillColor2" value="${block.fillColor2}"></label>`;
             blockAttributesHTML += `<label>Line Color: <input type="color" id="lineColor" value="${block.lineColor}"></label>`;
+            shroudList.innerHTML = "";
+            let shroudListHTML = `<button onclick="addShroud()">Add Shroud</button>`;
             let attributesHTML = '';
             
             if (block.typeargs === 'Cannon') {
@@ -127,10 +134,68 @@
                     <label>Damaged Color: <input type="color" id="damagedColor" value="${block.shielddamagedColor}"></label>
                 `;
             }
+            
+            if (!block.shrouds) block.shrouds = [];
+
+            // Repopulate shroud list
+            block.shrouds.forEach((shroud, index) => {
+                let shroudItem = document.createElement("li");
+                shroudItem.innerHTML = `
+                    <label>Size: <input type="text" class="shroud-size" value="${shroud.size}" data-index="${index}"></label>
+                    <label>Offset: <input type="text" class="shroud-offset" value="${shroud.offset}" data-index="${index}"></label>
+                    <label>Taper: <input type="number" class="shroud-taper" value="${shroud.taper}" data-index="${index}"></label>
+                    <label>Shape: <select class="shroud-shape" data-index="${index}">
+                        <option value="SQUARE" ${shroud.shape === "SQUARE" ? "selected" : ""}>SQUARE</option>
+                        <option value="HEXAGON" ${shroud.shape === "HEXAGON" ? "selected" : ""}>HEXAGON</option>
+                    </select></label>
+                    <button onclick="removeShroud(${index})">Remove</button>
+                `;
+                shroudList.appendChild(shroudItem);
+            });
 
             attributesHTML += `<button onclick="saveBlock()">Add Block</button>`;
             blockAttributesDiv.innerHTML += blockAttributesHTML;
             featureAttributesDiv.innerHTML += attributesHTML;
+            shroudList.innerHTML += shroudListHTML
+        }
+
+        function addShroud() {
+            let block = blocks.find(b => b.name === document.getElementById('name').value);
+            if (!block) return;
+
+            if (!block.shrouds) block.shrouds = [];
+
+            let shroudList = document.getElementById("shroudList");
+            let shroudIndex = block.shrouds.length;
+            let shroudItem = document.createElement("li");
+
+            shroudItem.innerHTML = `
+                <label>Size: <input type="text" class="shroud-size" value="{10,10}" data-index="${shroudIndex}"></label>
+                <label>Offset: <input type="text" class="shroud-offset" value="{0,0,0}" data-index="${shroudIndex}"></label>
+                <label>Taper: <input type="number" class="shroud-taper" value="1" data-index="${shroudIndex}"></label>
+                <label>Shape: <select class="shroud-shape" data-index="${shroudIndex}">
+                    <option value="SQUARE">SQUARE</option>
+                    <option value="HEXAGON">HEXAGON</option>
+                </select></label>
+                <button onclick="removeShroud(${shroudIndex})">Remove</button>
+            `;
+
+            shroudList.appendChild(shroudItem);
+
+            block.shrouds.push({
+                size: "{10,10}",
+                offset: "{0,0,0}",
+                taper: 1,
+                shape: "SQUARE"
+            });
+        }
+
+        function removeShroud(index) {
+            const block = blocks.find(b => b.name === document.getElementById('name').value);
+            if (block) {
+                block.shrouds.splice(index, 1);
+                renderAttributes(block); // Re-render attributes
+            }
         }
 
         function saveBlock() {
@@ -149,6 +214,8 @@
                 fillColor1: document.getElementById('fillColor1').value,
                 fillColor2: document.getElementById('fillColor2').value,
                 lineColor: document.getElementById('lineColor').value,
+                density: document.getElementById('density').value,
+                shrouds: []
             };
             if (block.typeargs === "Cannon") {
                 Object.assign(block, {
@@ -192,6 +259,15 @@
                 });
             }
             blocks.push(block);
+
+            let shroudElements = document.querySelectorAll("#shroudList li");
+            block.shrouds = Array.from(shroudElements).map(li => ({
+                size: li.querySelector(".shroud-size").value,
+                offset: li.querySelector(".shroud-offset").value,
+                taper: li.querySelector(".shroud-taper").value,
+                shape: li.querySelector(".shroud-shape").value
+            }));
+
             updateBlockList();
         }
 
@@ -237,7 +313,12 @@
             shieldregen: blockToClone.shieldregen,
             shielddelay: blockToClone.shielddelay,
             shieldcolor: blockToClone.shieldcolor,
-            shielddamagedColor: blockToClone.shielddamagedColor
+            shielddamagedColor: blockToClone.shielddamagedColor,
+            density: blockToClone.density,
+            shroudsize: blockToClone.shroudsize,
+            shroudoffset: blockToClone.shroudoffset,
+            shroudtaper: blockToClone.shroudtaper,
+            shroudshape: blockToClone.shroudshape,
         };
         blocks.push(clonedBlock);
         updateBlockList();
@@ -282,6 +363,8 @@
             luaCode += `        fillColor2 = ${hexToLuaColor(block.fillColor2)},\n`;
             luaCode += `        lineColor = ${hexToLuaColor(block.lineColor)},\n`;
             luaCode += `        capacity = ${block.capacity},\n`;
+            luaCode += `        durability = ${block.health},\n`;
+            luaCode += `        density = ${block.density},\n`;
             luaCode += `        shape = ${block.shape},\n`;
             luaCode += `        size = ${block.size},\n`;
             luaCode += `        points = ${block.points},\n`;
@@ -312,7 +395,6 @@
                 luaCode += `        },\n`;
             } else if (block.typeargs === 'Armor') {
                 luaCode += `        features = PALETTE,\n`;
-                luaCode += `        durability = ${block.health},\n`;
             } else if (block.typeargs === 'Generator') {
                 luaCode += `        features = PALETTE|GENERATOR,\n`;
                 luaCode += `        powerCapacity = ${block.powerCapacity},\n`;
@@ -337,6 +419,17 @@
                 luaCode += `            delay = ${block.shielddelay},\n`;
                 luaCode += `            color = ${hexToLuaColor(block.shieldcolor)},\n`;
                 luaCode += `            damagedColor = ${hexToLuaColor(block.shielddamagedColor)},\n`;
+                luaCode += `        },\n`;
+            }
+            if (block.shrouds && block.shrouds.length > 0) {
+                luaCode += `        shroud = {\n`;
+                block.shrouds.forEach((shroud, index) => {
+                    luaCode += `            {size = ${shroud.size}, offset = ${shroud.offset}, taper = ${shroud.taper}, shape = ${shroud.shape}}`;
+                    if (index < block.shrouds.length - 1) {
+                        luaCode += `,`;
+                    }
+                    luaCode += `\n`;
+                });
                 luaCode += `        },\n`;
             }
 
@@ -400,6 +493,7 @@
                     if (value.includes("THRUSTER")) block.typeargs = "Thruster";
                     if (value.includes("FACTORY")) block.typeargs = "Factory";
                     if (value.includes("SHIELD")) block.typeargs = "Shield";
+                    
                 } else if (key === "cannon") {
                     let cannonStats = value.match(/damage\s*=\s*(\d+).*?roundsPerSec\s*=\s*(\d+).*?range\s*=\s*(\d+)/s);
                     if (cannonStats) {
