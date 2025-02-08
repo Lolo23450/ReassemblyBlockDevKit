@@ -126,7 +126,6 @@
             } else if (block.typeargs === 'Shield') {
                 attributesHTML += `
                     <label>Radius: <input type="number" id="radius" value="${block.shieldradius}"></label>
-                    <label>Power: <input type="number" id="power" value="${block.shieldpower}"></label>
                     <label>Health: <input type="number" id="shieldhealth" value="${block.shieldhealth}"></label>
                     <label>Health Regen per Sec: <input type="number" id="regen" value="${block.shieldregen}"></label>
                     <label>Delay: <input type="number" id="delay" value="${block.shielddelay}"></label>
@@ -413,8 +412,7 @@
                 luaCode += `        features = PALETTE|SHIELD,\n`;
                 luaCode += `        shield = {\n`;
                 luaCode += `            radius = ${block.shieldradius},\n`;
-                luaCode += `            power = ${block.shieldpower},\n`;
-                luaCode += `            health = ${block.shieldhealth},\n`;
+                luaCode += `            strenght = ${block.shieldhealth},\n`;
                 luaCode += `            regen = ${block.shieldregen},\n`;
                 luaCode += `            delay = ${block.shielddelay},\n`;
                 luaCode += `            color = ${hexToLuaColor(block.shieldcolor)},\n`;
