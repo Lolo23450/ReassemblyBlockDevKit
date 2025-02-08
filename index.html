@@ -12,8 +12,9 @@
         .attribute-section { margin-top: 10px; }
         label { width: 97%; display: block; margin-top: 5px; }
         input, select { width: 100%; padding: 5px; margin-bottom: 5px; }
-        #exportBtn, #creditsBtn { margin-top: 10px; padding: 10px; background: green; color: white; border: none; cursor: pointer; }
+        #exportBtn, #creditsBtn, #loadBtn { margin-top: 10px; padding: 10px; background: green; color: white; border: none; cursor: pointer; }
         #creditsBtn { background: blue; }
+        #loadBtn { background-color: green;}
         #creditsPopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid black; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); }
         #closeCredits { margin-top: 10px; padding: 5px; background: red; color: white; border: none; cursor: pointer; }
     </style>
@@ -22,6 +23,7 @@
     <h1>Reassembly Block Development Kit</h1>
     <button id="creditsBtn" onclick="showCredits()">Credits</button>
     <button id="exportBtn" onclick="exportBlocks()">Export blocks.lua</button>
+    <button id="loadBtn" onclick="loadBlocks()">Load blocks.lua</button>
     <div id="creditsPopup">
         <h2>Credits</h2>
         <p>Developed by: Lolo</p>
@@ -354,6 +356,75 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
+
+    function loadBlocks() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.lua';
+        input.onchange = async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const text = await file.text();
+                parseLuaBlocks(text);
+            }
+        };
+        input.click();
+    }
+
+    function parseLuaBlocks(luaCode) {
+    const blockRegex = /{\s*(\d+),([\s\S]*?)\s*},/g;
+    let match;
+
+    blocks = []; // Clear existing blocks
+
+    while ((match = blockRegex.exec(luaCode)) !== null) {
+        let block = { id: parseInt(match[1]), typeargs: "", turreted: "False" };
+        let attributes = match[2];
+
+        // Extract key-value pairs
+        attributes.split("\n").forEach(line => {
+            let keyValue = line.match(/\s*(\w+)\s*=\s*(.*?),/);
+            if (keyValue) {
+                let key = keyValue[1].trim();
+                let value = keyValue[2].trim().replace(/"|,/g, "");
+
+                // Handle special cases
+                if (key === "name" || key === "shape") {
+                    block[key] = value;
+                } else if (key === "features") {
+                    if (value.includes("CANNON")) block.typeargs = "Cannon";
+                    if (value.includes("LASER")) block.typeargs = "Laser";
+                    if (value.includes("TURRET")) block.turreted = "True";
+                    if (value.includes("GENERATOR")) block.typeargs = "Generator";
+                    if (value.includes("COMMAND")) block.typeargs = "Command";
+                    if (value.includes("THRUSTER")) block.typeargs = "Thruster";
+                    if (value.includes("FACTORY")) block.typeargs = "Factory";
+                    if (value.includes("SHIELD")) block.typeargs = "Shield";
+                } else if (key === "cannon") {
+                    let cannonStats = value.match(/damage\s*=\s*(\d+).*?roundsPerSec\s*=\s*(\d+).*?range\s*=\s*(\d+)/s);
+                    if (cannonStats) {
+                        block.cannondmg = parseInt(cannonStats[1]);
+                        block.cannonrounds = parseInt(cannonStats[2]);
+                        block.cannonrange = parseInt(cannonStats[3]);
+                    }
+                } else if (key === "laser") {
+                    let laserStats = value.match(/damage\s*=\s*(\d+).*?range\s*=\s*(\d+)/s);
+                    if (laserStats) {
+                        block.laserdmg = parseInt(laserStats[1]);
+                        block.laserrange = parseInt(laserStats[2]);
+                    }
+                } else if (!isNaN(value)) {
+                    block[key] = parseFloat(value);
+                }
+            }
+        });
+
+        blocks.push(block);
+    }
+
+    updateBlockList(); // Refresh UI
+}
+
 </script>
 </body>
 </html>
