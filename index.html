@@ -41,6 +41,7 @@
             <button onclick="selectBlock('Thruster')">Thruster</button>
             <button onclick="selectBlock('Factory')">Factory</button>
             <button onclick="selectBlock('Shield')">Shield</button>
+            <button onclick="selectBlock('Tractor')">Tractor</button>
         </div>
         <div class="panel">
             <h3>Block Attributes</h3>
@@ -68,7 +69,7 @@
         }
 
         function selectBlock(typeargs, generalargs) {
-            renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower:5 , turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 3000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000", density: 1, shroudsize: 2, shroudoffset: "{0,0,0}", shroudtaper: 1, shroudshape: "SQUARE"});
+            renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower: 5, lasercolor: "#ffffff", turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 3000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000", density: 1, shroudsize: 2, shroudoffset: "{0,0,0}", shroudtaper: 1, shroudshape: "SQUARE", tractorRange: 500});
         }
 
         function renderAttributes(block) {
@@ -109,6 +110,7 @@
                     <label>Range: <input type="number" id="laserrange" value="${block.laserrange}"></label>
                     <label>Width: <input type="number" id="laserwidth" value="${block.laserwidth}"></label>
                     <label>Power: <input type="number" id="laserpower" value="${block.laserpower}"></label>
+                    <label>Color: <input type="color" id="lasercolor" value="${block.lasercolor}"></label>
                 `;
             } else if (block.typeargs === 'Generator') {
                 attributesHTML += `
@@ -132,8 +134,11 @@
                     <label>Color: <input type="color" id="color" value="${block.shieldcolor}"></label>
                     <label>Damaged Color: <input type="color" id="damagedColor" value="${block.shielddamagedColor}"></label>
                 `;
+            } else if (block.typeargs === 'Tractor') {
+                attributesHTML += `
+                    <label>Tractor Range: <input type="number" id="tractorRange" value="${block.tractorRange}"></label>
+                `;
             }
-            
             if (!block.shrouds) block.shrouds = [];
 
             // Repopulate shroud list
@@ -244,6 +249,7 @@
                     laserrange: document.getElementById('laserrange').value,
                     laserwidth: document.getElementById('laserwidth').value,
                     laserpower: document.getElementById('laserpower').value,
+                    lasercolor: document.getElementById('lasercolor'),
                     turreted: document.getElementById('turreted').value,
                 });
             } else if (block.typeargs === "Shield") {
@@ -255,6 +261,10 @@
                     shielddelay: document.getElementById('delay').value,
                     shieldcolor: document.getElementById('color').value,
                     shielddamagedColor: document.getElementById('damagedColor').value,
+                });
+            } else if (block.typeargs === "Tractor") {
+                Object.assign(block, {
+                    tractorRange: document.getElementById('tractorRange').value,
                 });
             }
             blocks.push(block);
@@ -300,6 +310,7 @@
             laserrange: blockToClone.laserrange,
             laserwidth: blockToClone.laserwidth,
             laserpower: blockToClone.laserpower,
+            lasercolor: blockToClone.lasercolor,
             turreted: blockToClone.turreted,
             health: blockToClone.health,
             powerCapacity: blockToClone.powerCapacity,
@@ -318,6 +329,7 @@
             shroudoffset: blockToClone.shroudoffset,
             shroudtaper: blockToClone.shroudtaper,
             shroudshape: blockToClone.shroudshape,
+            tractorRange: blockToClone.tractorRange,
         };
         blocks.push(clonedBlock);
         updateBlockList();
@@ -391,6 +403,7 @@
                 luaCode += `            range = ${block.laserrange},\n`;
                 luaCode += `            width = ${block.laserwidth},\n`;
                 luaCode += `            power = ${block.laserpower},\n`;
+                luaCode += `            color = ${block.lasercolor},\n`;
                 luaCode += `        },\n`;
             } else if (block.typeargs === 'Armor') {
                 luaCode += `        features = PALETTE,\n`;
@@ -418,6 +431,9 @@
                 luaCode += `            color = ${hexToLuaColor(block.shieldcolor)},\n`;
                 luaCode += `            damagedColor = ${hexToLuaColor(block.shielddamagedColor)},\n`;
                 luaCode += `        },\n`;
+            } else if (block.typeargs === 'Tractor') {
+                luaCode += `        features = PALETTE|TRACTOR,\n`;
+                luaCode += `        tractorRange = ${block.tractorRange},\n`;
             }
             if (block.shrouds && block.shrouds.length > 0) {
                 luaCode += `        shroud = {\n`;
