@@ -37,6 +37,8 @@
             <button onclick="selectBlock('Generator')">Generator</button>
             <button onclick="selectBlock('Command')">Command Module</button>
             <button onclick="selectBlock('Thruster')">Thruster</button>
+            <button onclick="selectBlock('Factory')">Factory</button>
+            <button onclick="selectBlock('Shield')">Shield</button>
         </div>
         <div class="panel">
             <h3>Block Attributes</h3>
@@ -61,7 +63,7 @@
         }
 
         function selectBlock(typeargs, generalargs) {
-            renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower:5 , turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 3000, points: 0 });
+            renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower:5 , turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 3000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000" });
         }
 
         function renderAttributes(block) {
@@ -73,6 +75,7 @@
             blockAttributesHTML += `<label>Block ID: <input type="number" id="id" value="${block.id}"></label>`;
             blockAttributesHTML += `<label>Group/Faction ID: <input type="text" id="group" value="${block.group}"></label>`;
             blockAttributesHTML += `<label>Shape: <input type="text" id="shape" value="${block.shape}"></label>`;
+            blockAttributesHTML += `<label>Size: <input type="number" id="size" value="${block.size}"></label>`;
             blockAttributesHTML += `<label>Health Multiplier: <input type="number" id="health" value="${block.health}"></label>`;
             blockAttributesHTML += `<label>Capacity: <input type="number" id="capacity" value="${block.capacity}"></label>`;
             blockAttributesHTML += `<label>P Cost: <input type="number" id="points" value="${block.points}"></label>`;
@@ -111,6 +114,16 @@
                 attributesHTML += `
                     <label>Thruster Force: <input type="number" id="thrust" value="${block.thrust}"></label>
                 `;
+            } else if (block.typeargs === 'Shield') {
+                attributesHTML += `
+                    <label>Radius: <input type="number" id="radius" value="${block.shieldradius}"></label>
+                    <label>Power: <input type="number" id="power" value="${block.shieldpower}"></label>
+                    <label>Health: <input type="number" id="shieldhealth" value="${block.shieldhealth}"></label>
+                    <label>Health Regen per Sec: <input type="number" id="regen" value="${block.shieldregen}"></label>
+                    <label>Delay: <input type="number" id="delay" value="${block.shielddelay}"></label>
+                    <label>Color: <input type="color" id="color" value="${block.shieldcolor}"></label>
+                    <label>Damaged Color: <input type="color" id="damagedColor" value="${block.shielddamagedColor}"></label>
+                `;
             }
 
             attributesHTML += `<button onclick="saveBlock()">Add Block</button>`;
@@ -124,6 +137,7 @@
                 generalargs: document.querySelector('h5').textContent.split(' ')[0],
                 name: document.getElementById('name').value,
                 shape: document.getElementById('shape').value,
+                size: document.getElementById('size').value,
                 group: document.getElementById('group').value,
                 points: document.getElementById('points').value,
                 id: document.getElementById('id').value,
@@ -164,6 +178,16 @@
                     laserpower: document.getElementById('laserpower').value,
                     turreted: document.getElementById('turreted').value,
                 });
+            } else if (block.typeargs === "Shield") {
+                Object.assign(block, {
+                    shieldradius: document.getElementById('radius').value,
+                    shieldpower: document.getElementById('power').value,
+                    shieldhealth: document.getElementById('shieldhealth').value,
+                    shieldregen: document.getElementById('regen').value,
+                    shielddelay: document.getElementById('delay').value,
+                    shieldcolor: document.getElementById('color').value,
+                    shielddamagedColor: document.getElementById('damagedColor').value,
+                });
             }
             blocks.push(block);
             updateBlockList();
@@ -183,6 +207,7 @@
             id: blocks.length + 1, 
             name: `${blockToClone.name} (Clone)`,
             shape: blockToClone.shape,
+            size: blockToClone.size,
             group: blockToClone.group,
             fillColor1: blockToClone.fillColor1,
             fillColor2: blockToClone.fillColor2,
@@ -203,7 +228,14 @@
             powerCapacity: blockToClone.powerCapacity,
             generatorCapacityPerSec: blockToClone.generatorCapacityPerSec,
             faction: blockToClone.faction,
-            thrust: blockToClone.thrust
+            thrust: blockToClone.thrust,
+            shieldradius: blockToClone.shieldradius,
+            shieldpower: blockToClone.shieldpower,
+            shieldhealth: blockToClone.shieldhealth,
+            shieldregen: blockToClone.shieldregen,
+            shielddelay: blockToClone.shielddelay,
+            shieldcolor: blockToClone.shieldcolor,
+            shielddamagedColor: blockToClone.shielddamagedColor
         };
         blocks.push(clonedBlock);
         updateBlockList();
@@ -249,6 +281,7 @@
             luaCode += `        lineColor = ${hexToLuaColor(block.lineColor)},\n`;
             luaCode += `        capacity = ${block.capacity},\n`;
             luaCode += `        shape = ${block.shape},\n`;
+            luaCode += `        size = ${block.size},\n`;
             luaCode += `        points = ${block.points},\n`;
             if (block.typeargs === 'Cannon') {
                 if (block.turreted === 'True') {
@@ -283,12 +316,26 @@
                 luaCode += `        powerCapacity = ${block.powerCapacity},\n`;
                 luaCode += `        generatorCapacityPerSec = ${block.generatorCapacityPerSec},\n`;
             } else if (block.typeargs === 'Command') {
-                luaCode += `        features = COMMAND,\n`;
+                luaCode += `        features = COMMAND|ASSEMBLER,\n`;
                 luaCode += `        command = {\n`;
                 luaCode += `            faction = ${block.faction},\n`;
+                luaCode += `        },\n`;
             } else if (block.typeargs === 'Thruster') {
                 luaCode += `        features = PALETTE|THRUSTER,\n`;
                 luaCode += `        thrusterForce = ${block.thrust},\n`;
+            } else if (block.typeargs === 'Factory') {
+                luaCode += `        features = PALETTE|FACTORY,\n`;
+            } else if (block.typeargs === 'Shield') {
+                luaCode += `        features = PALETTE|SHIELD,\n`;
+                luaCode += `        shield = {\n`;
+                luaCode += `            radius = ${block.shieldradius},\n`;
+                luaCode += `            power = ${block.shieldpower},\n`;
+                luaCode += `            health = ${block.shieldhealth},\n`;
+                luaCode += `            regen = ${block.shieldregen},\n`;
+                luaCode += `            delay = ${block.shielddelay},\n`;
+                luaCode += `            color = ${hexToLuaColor(block.shieldcolor)},\n`;
+                luaCode += `            damagedColor = ${hexToLuaColor(block.shielddamagedColor)},\n`;
+                luaCode += `        },\n`;
             }
 
             luaCode += `    },\n`;
