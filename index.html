@@ -25,7 +25,7 @@
     <div id="creditsPopup">
         <h2>Credits</h2>
         <p>Developed by: Lolo</p>
-        <p>Contributors: ChatGPT</p>
+        <p>Contributors: ChatGPT, Copilot</p>
         <button id="closeCredits" onclick="closeCredits()">Close</button>
     </div>
     <div class="container">
@@ -73,6 +73,7 @@
             blockAttributesHTML += `<label>Block ID: <input type="number" id="id" value="${block.id}"></label>`;
             blockAttributesHTML += `<label>Group/Faction ID: <input type="text" id="group" value="${block.group}"></label>`;
             blockAttributesHTML += `<label>Shape: <input type="text" id="shape" value="${block.shape}"></label>`;
+            blockAttributesHTML += `<label>Health Multiplier: <input type="number" id="health" value="${block.health}"></label>`;
             blockAttributesHTML += `<label>Capacity: <input type="number" id="capacity" value="${block.capacity}"></label>`;
             blockAttributesHTML += `<label>P Cost: <input type="number" id="points" value="${block.points}"></label>`;
             blockAttributesHTML += `<label>Fill Color 1: <input type="color" id="fillColor1" value="${block.fillColor1}"></label>`;
@@ -97,8 +98,6 @@
                     <label>Width: <input type="number" id="laserwidth" value="${block.laserwidth}"></label>
                     <label>Power: <input type="number" id="laserpower" value="${block.laserpower}"></label>
                 `;
-            } else if (block.typeargs === 'Armor') {
-                attributesHTML += `<label>Health Multiplier: <input type="number" id="health" value="${block.health}"></label>`;
             } else if (block.typeargs === 'Generator') {
                 attributesHTML += `
                     <label>Power Capacity: <input type="number" id="powerCapacity" value="${block.powerCapacity}"></label>
@@ -128,6 +127,7 @@
                 group: document.getElementById('group').value,
                 points: document.getElementById('points').value,
                 id: document.getElementById('id').value,
+                health: document.getElementById('health').value,
                 capacity: document.getElementById('capacity').value,
                 points: document.getElementById('points').value,
                 fillColor1: document.getElementById('fillColor1').value,
@@ -142,10 +142,6 @@
                     cannonvel: document.getElementById('muzzleVel').value,
                     cannonpower: document.getElementById('power').value,
                     turreted: document.getElementById('turreted').value,
-                });
-            } else if (block.typeargs === "Armor") {
-                Object.assign(block, {
-                    health: document.getElementById('health').value,
                 });
             } else if (block.typeargs === "Generator") {
                 Object.assign(block, {
@@ -180,6 +176,39 @@
             }
         }
 
+        function cloneBlock(index) {
+        const blockToClone = blocks[index];
+        const clonedBlock = { 
+            ...blockToClone, 
+            id: blocks.length + 1, 
+            name: `${blockToClone.name} (Clone)`,
+            shape: blockToClone.shape,
+            group: blockToClone.group,
+            fillColor1: blockToClone.fillColor1,
+            fillColor2: blockToClone.fillColor2,
+            lineColor: blockToClone.lineColor,
+            capacity: blockToClone.capacity,
+            points: blockToClone.points,
+            cannondmg: blockToClone.cannondmg,
+            cannonrounds: blockToClone.cannonrounds,
+            cannonrange: blockToClone.cannonrange,
+            cannonvel: blockToClone.cannonvel,
+            cannonpower: blockToClone.cannonpower,
+            laserdmg: blockToClone.laserdmg,
+            laserrange: blockToClone.laserrange,
+            laserwidth: blockToClone.laserwidth,
+            laserpower: blockToClone.laserpower,
+            turreted: blockToClone.turreted,
+            health: blockToClone.health,
+            powerCapacity: blockToClone.powerCapacity,
+            generatorCapacityPerSec: blockToClone.generatorCapacityPerSec,
+            faction: blockToClone.faction,
+            thrust: blockToClone.thrust
+        };
+        blocks.push(clonedBlock);
+        updateBlockList();
+    }
+
         function updateBlockList() {
             const blockList = document.getElementById('blockList');
             blockList.innerHTML = '';
@@ -195,6 +224,13 @@
                 deleteBtn.style.color = "white";
                 deleteBtn.onclick = () => deleteBlock(index);
                 blockList.appendChild(deleteBtn);
+
+                let cloneBtn = document.createElement('button');
+                cloneBtn.textContent = "Clone";
+                cloneBtn.style.background = "orange";
+                cloneBtn.style.color = "white";
+                cloneBtn.onclick = () => cloneBlock(index);
+                blockList.appendChild(cloneBtn);
             });
         }
 
