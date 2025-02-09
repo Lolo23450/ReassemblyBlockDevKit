@@ -133,10 +133,10 @@
                     <label>Range: <input type="number" id="range" value="${block.cannonrange}"></label>
                     <label>Shot Velocity: <input type="number" id="muzzleVel" value="${block.cannonvel}"></label>
                     <label>Power: <input type="number" id="power" value="${block.cannonpower}"></label>
-                    <label>Spread (0-3.6): <input type="number" id="spread" min="0" max="3.6" step="0.1" value="${block.spread || 0}"></label>
-                    <label>Projectile Size (1-100): <input type="number" id="projectileSize" min="1" max="100" value="${block.projectileSize || 1}"></label>
-                    <label>Rounds per Burst (1-100): <input type="number" id="roundsPerBurst" min="1" max="100" value="${block.roundsPerBurst || 1}"></label>
-                    <label>Burstyness (0-1): <input type="number" id="burstiness" min="0" max="1" step="0.1" value="${block.burstiness || 0}"></label>
+                    <label>Spread (0-3.6): <input type="number" id="spread" min="0" max="3.6" step="0.1" value="${block.spread || 0}" oninput="this.value = Math.min(Math.max(this.value, 0), 3.6)"></label>
+                    <label>Projectile Size (1-100): <input type="number" id="projectileSize" min="1" max="100" value="${block.projectileSize || 1}" oninput="this.value = Math.min(Math.max(this.value, 1), 100)"></label>
+                    <label>Rounds per Burst (1-100): <input type="number" id="roundsPerBurst" min="1" max="100" value="${block.roundsPerBurst || 1}" oninput="this.value = Math.min(Math.max(this.value, 1), 100)"></label>
+                    <label>Burstyness (0-1): <input type="number" id="burstiness" min="0" max="1" step="0.1" value="${block.burstiness || 0}" oninput="this.value = Math.min(Math.max(this.value, 0), 1)"></label>
                 `;
             } else if (block.typeargs === 'Laser') {
                 attributesHTML += `
