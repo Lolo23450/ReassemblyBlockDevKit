@@ -13,8 +13,7 @@
         label { width: 97%; display: inline-block; margin-top: 2px; margin-bottom: 2px; }
         input, select { width: 100%; padding: 3px; margin-bottom: 3px; }
         #searchInput { margin-bottom: 10px; padding: 5px; width: 95%; }
-        #exportBtn, #creditsBtn, #loadBtn, #darkModeBtn, #clearStorageBtn { margin-top: 10px; padding: 10px; background: green; color: white; border: none; cursor: pointer; }
-        #creditsBtn { background: blue; }
+        #exportBtn, #creditsBtn, #loadBtn, #darkModeBtn, #clearStorageBtn, #tutorialBtn { margin-top: 10px; padding: 10px; background: green; color: white; border: none; cursor: pointer; }        #creditsBtn { background: blue; }
         #loadBtn { background-color: green; }
         #darkModeBtn { background-color: blue; }
         #clearStorageBtn { background-color: red; }
@@ -169,11 +168,116 @@
             height: 16px;
             cursor: pointer;
         }
+
+        /* Tutorial Modal Styles */
+        #tutorialModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        #tutorialModal.dark-mode {
+            background: #333;
+            color: white;
+        }
+
+        .tutorial-step {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-left: 4px solid #007BFF;
+            background: rgba(0, 123, 255, 0.1);
+        }
+
+        .tutorial-step h4 {
+            margin-top: 0;
+            color: #007BFF;
+        }
+
+        #closeTutorial {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FF4136;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .block-preview {
+            width: 200px;
+            height: 200px;
+            border: 2px solid #ccc;
+            margin: 10px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .preview-block {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .preview-shape {
+            width: 100%;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .block-preview {
+            border-color: #666;
+        }
+
+        /* Shape styles */
+        .shape-SQUARE {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .shape-HEXAGON {
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+        }
+
+        .shape-PENTAGON {
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+        }
+
+        .shape-OCTAGON {
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+        }
+
+        .shape-TRI {
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        }
     </style>
 </head>
 <body>
 
     <h1>Reassembly Block Development Kit</h1>
+    <button id="tutorialBtn" onclick="showTutorial()" style="background: #007BFF; color: white; margin-right: 10px;">Tutorial</button>
     <button id="creditsBtn" onclick="showCredits()">Credits</button>
     <button id="darkModeBtn" onclick="toggleDarkMode()">Toggle Dark/Light Mode</button>
     <button id="exportBtn" onclick="exportBlocks()">Export blocks.lua</button>
@@ -217,6 +321,7 @@
         </div>
         <div class="panel">
             <h3>2- Select Block Attributes</h3>
+            <div id="blockPreview" class="block-preview"></div>
             <div id="blockattributes"></div>
             <div id="attributes"></div>
             <div id="shroudSection" style="display: none;">
@@ -236,6 +341,50 @@
         </div>
     </div>
 
+    <!-- Add Tutorial Modal -->
+    <div class="modal-overlay" id="tutorialOverlay"></div>
+    <div id="tutorialModal">
+        <button id="closeTutorial" onclick="closeTutorial()">×</button>
+        <h2>How to Use the Block Development Kit</h2>
+        
+        <div class="tutorial-step">
+            <h4>Step 1: Project Management</h4>
+            <p>- Enter a project name in the "Project Manager" section<br>
+            - Use "Save Project" to store your work<br>
+            - Enable "Autosave" for automatic backup every 4 minutes</p>
+        </div>
+
+        <div class="tutorial-step">
+            <h4>Step 2: Creating a Block</h4>
+            <p>1. Click on a block type from the left panel (Armor, Cannon, etc.)<br>
+            2. Fill in the general attributes (name, size, shape, etc.)<br>
+            3. Configure block-specific attributes (damage for weapons, etc.)<br>
+            4. Click "Add Block" to save your creation</p>
+        </div>
+
+        <div class="tutorial-step">
+            <h4>Step 3: Managing Blocks</h4>
+            <p>- Use the search bar to filter blocks<br>
+            - Click on existing blocks to edit them<br>
+            - Use "Clone" to duplicate blocks<br>
+            - Use "Delete" to remove blocks</p>
+        </div>
+
+        <div class="tutorial-step">
+            <h4>Step 4: Exporting</h4>
+            <p>- Click "Export blocks.lua" to save your blocks as a Lua file<br>
+            - Place the exported file in your Reassembly mods folder<br>
+            - The default path is: Steam/steamapps/common/Reassembly/mods/</p>
+        </div>
+
+        <div class="tutorial-step">
+            <h4>Tips</h4>
+            <p>- Use dark/light mode toggle for better visibility<br>
+            - Save your work frequently<br>
+            - Make backup copies of important projects</p>
+        </div>
+    </div>
+
     <script>
 
         let blocks = [];
@@ -245,7 +394,9 @@
             document.querySelectorAll(".panel").forEach(panel => panel.classList.toggle("dark-mode"));
             document.querySelectorAll("input").forEach(input => input.classList.toggle("dark-mode"))
             document.getElementById('creditsPopup').classList.toggle('dark-mode');
-            document.querySelector('.project-manager-panel').classList.toggle('dark-mode'); // Add this line
+            document.querySelector('.project-manager-panel').classList.toggle('dark-mode');
+            document.getElementById('tutorialModal').classList.toggle('dark-mode');
+            // Save dark mode state to localStorage
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
@@ -256,6 +407,8 @@
                 document.querySelectorAll(".panel").forEach(panel => panel.classList.add("dark-mode"));
                 document.querySelectorAll("input").forEach(input => input.classList.add("dark-mode"));
                 document.getElementById('creditsPopup').classList.add('dark-mode');
+                document.querySelector('.project-manager-panel').classList.add('dark-mode');
+                document.getElementById('tutorialModal').classList.add('dark-mode');
             }
 
             // Load saved blocks from local storage
@@ -279,6 +432,7 @@
 
         function selectBlock(typeargs, generalargs) {
             renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, spread: 0, projectileSize: 1, roundsPerBurst: 1, burstiness: 0, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower: 5, lasercolor: "#ffffff", turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 30000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000", density: 1, shroudsize: 2, shroudoffset: "{0,0,0}", shroudtaper: 1, shroudshape: "SQUARE", tractorRange: 500});
+            updateBlockPreview();
         }
 
         function filterBlocks() {
@@ -313,6 +467,173 @@
                     blockList.appendChild(cloneBtn);
                 }
             });
+        }
+
+        function updateBlockPreview() {
+            const previewDiv = document.getElementById('blockPreview');
+            const size = document.getElementById('size') ? Math.min(parseFloat(document.getElementById('size').value), 20) : 1;
+            const shape = document.getElementById('shape') ? document.getElementById('shape').value : 'SQUARE';
+            const fillColor1 = document.getElementById('fillColor1') ? document.getElementById('fillColor1').value : '#d4d4d4';
+            const fillColor2 = document.getElementById('fillColor2') ? document.getElementById('fillColor2').value : '#959696';
+            const lineColor = document.getElementById('lineColor') ? document.getElementById('lineColor').value : '#686869';
+            const blockType = document.querySelector('h4') ? document.querySelector('h4').textContent.split(' ')[0] : '';
+            const isTurreted = document.getElementById('turreted') ? document.getElementById('turreted').value === 'True' : false;
+
+            // Calculate base size (50px default, scaled by size input), with max size of 20
+            const baseSize = 50 * Math.min(size, 20);
+            const maxSize = 150; // Maximum size to prevent overflow
+            const actualSize = Math.min(baseSize, maxSize);
+
+            // Generate shroud HTML
+            let shroudHTML = '';
+            const shroudElements = document.querySelectorAll("#shroudList li");
+            const shrouds = Array.from(shroudElements).map(shroudElement => {
+                const shroudSize = shroudElement.querySelector(".shroud-size").value;
+                const shroudOffset = shroudElement.querySelector(".shroud-offset").value;
+                const shroudTaper = parseFloat(shroudElement.querySelector(".shroud-taper").value);
+                const shroudShape = shroudElement.querySelector(".shroud-shape").value;
+
+                // Parse size and offset values
+                let [sizeX, sizeY] = shroudSize.replace(/[{}]/g, '').split(',').map(n => parseFloat(n));
+                let [offsetX, offsetY, offsetZ] = shroudOffset.replace(/[{}]/g, '').split(',').map(n => parseFloat(n) || 0);
+
+                // Scale values for preview
+                sizeX = (sizeX * actualSize) / 20;
+                sizeY = (sizeY * actualSize) / 20;
+                offsetX = (offsetX * actualSize) / 20;
+                offsetY = (offsetY * actualSize) / 20;
+
+                return {
+                    html: `
+                        <div class="preview-shroud shape-${shroudShape}" style="
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            width: ${sizeX}px;
+                            height: ${sizeY}px;
+                            background: linear-gradient(45deg, ${fillColor2}${Math.round(shroudTaper * 255).toString(16).padStart(2, '0')}, ${fillColor1}${Math.round(shroudTaper * 255).toString(16).padStart(2, '0')});
+                            border: ${Math.max(1, size/3)}px solid ${lineColor};
+                            transform: translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px));
+                            z-index: ${Math.round(offsetZ * 10)};
+                        "></div>
+                    `,
+                    zIndex: offsetZ
+                };
+            });
+
+            // Sort shrouds by Z offset and combine HTML
+            shroudHTML = shrouds.sort((a, b) => a.zIndex - b.zIndex)
+                               .map(shroud => shroud.html)
+                               .join('');
+
+            // Calculate turret dimensions based on weapon attributes
+            let turretHTML = '';
+            if ((blockType === 'Cannon' || blockType === 'Laser') && isTurreted) {
+                const turretSize = actualSize * 0.6; // Turret base size
+                let barrelLength, barrelWidth, barrelCount = 1;
+                
+                if (blockType === 'Cannon') {
+                    const damage = parseFloat(document.getElementById('damage')?.value || 20);
+                    const velocity = parseFloat(document.getElementById('muzzleVel')?.value || 1000);
+                    const roundsPerSec = parseFloat(document.getElementById('roundsPerSec')?.value || 4);
+                    
+                    // More pronounced scaling for damage and velocity
+                    barrelLength = Math.min(turretSize * (velocity / 500) * 0.5, turretSize * 2.5);
+                    barrelWidth = Math.min(turretSize * (damage / 10) * 0.15, turretSize * 0.8); // Increased damage impact
+                    
+                    // Calculate barrel count based on rounds per second (reduced impact)
+                    barrelCount = Math.min(Math.ceil(roundsPerSec / 4), 4); // Max 4 barrels, requires higher RPS
+                    
+                    // Generate multiple barrels
+                    let barrelsHTML = '';
+                    for (let i = 0; i < barrelCount; i++) {
+                        const offsetY = -barrelWidth * (barrelCount - 1) / 2 + (i * barrelWidth);
+                        
+                        barrelsHTML += `
+                            <div class="preview-barrel" style="
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                width: ${barrelLength}px;
+                                height: ${barrelWidth}px;
+                                background: linear-gradient(90deg, ${fillColor1}, ${fillColor2});
+                                border: ${Math.max(1, size/2)}px solid ${lineColor};
+                                transform: translate(0%, ${offsetY}px) translateY(-50%);
+                                transform-origin: left center;
+                                border-radius: ${barrelWidth / 8}px;
+                            "></div>
+                        `;
+                    }
+
+                    turretHTML = `
+                        <div class="preview-turret" style="
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            width: ${turretSize}px;
+                            height: ${turretSize}px;
+                            background: linear-gradient(45deg, ${fillColor2}, ${fillColor1});
+                            border: ${Math.max(2, size)}px solid ${lineColor};
+                            border-radius: 50%;
+                            z-index: 2;
+                        ">
+                            ${barrelsHTML}
+                        </div>
+                    `;
+                } else if (blockType === 'Laser') {
+                    const damage = parseFloat(document.getElementById('laserdamage')?.value || 100);
+                    const width = parseFloat(document.getElementById('laserwidth')?.value || 2);
+                    barrelLength = turretSize * 1.2; // Made longer for triangle
+                    barrelWidth = Math.min(turretSize * (width / 2) * 0.3, turretSize * 0.4);
+
+                    turretHTML = `
+                        <div class="preview-turret" style="
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            width: ${turretSize}px;
+                            height: ${turretSize}px;
+                            background: linear-gradient(45deg, ${fillColor2}, ${fillColor1});
+                            border: ${Math.max(2, size)}px solid ${lineColor};
+                            border-radius: 50%;
+                            z-index: 2;
+                        ">
+                            <div class="preview-barrel" style="
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                width: ${barrelLength}px;
+                                height: ${barrelWidth * 2}px;
+                                background: linear-gradient(90deg, ${fillColor1}, ${fillColor2});
+                                clip-path: polygon(100% 50%, 0 0, 0 100%);
+                                transform: translate(0%, -50%);
+                                transform-origin: left center;
+                                outline: ${Math.max(2, size/2)}px solid ${lineColor};
+                                outline-offset: -${Math.max(2, size/2)}px;
+                            "></div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Create or update preview with adjusted z-indices
+            previewDiv.innerHTML = `
+                <div class="preview-block" style="width: ${actualSize}px; height: ${actualSize}px;">
+                    <div class="preview-shape shape-${shape}" style="
+                        background: linear-gradient(45deg, ${fillColor1}, ${fillColor2});
+                        border: ${2 * Math.sqrt(size)}px solid ${lineColor};
+                        width: 100%;
+                        height: 100%;
+                        position: relative;
+                        z-index: 0;
+                    "></div>
+                    ${shroudHTML}
+                    ${turretHTML}
+                    ${blockType ? `<div style="position: absolute; top: -25px; width: 100%; text-align: center;">${blockType}</div>` : ''}
+                </div>
+            `;
         }
 
         function renderAttributes(block) {
@@ -434,6 +755,23 @@
             blockAttributesDiv.innerHTML += blockAttributesHTML;
             featureAttributesDiv.innerHTML += attributesHTML;
             shroudList.innerHTML += shroudListHTML;
+
+            // Add event listeners for preview updates
+            ['size', 'shape', 'fillColor1', 'fillColor2', 'lineColor', 'turreted', 'damage', 'muzzleVel', 
+             'roundsPerSec', 'laserdamage', 'laserwidth'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', updateBlockPreview);
+                }
+            });
+
+            // Add event listeners for shroud updates
+            document.querySelectorAll('.shroud-size, .shroud-offset, .shroud-taper, .shroud-shape').forEach(element => {
+                element.addEventListener('input', updateBlockPreview);
+            });
+
+            // Initial preview update
+            updateBlockPreview();
         }
 
         function addShroud() {
@@ -605,20 +943,36 @@
                     tractorRange: document.getElementById('tractorRange').value,
                 });
             }
-            blocks.push(block);
+
+            // Check if a block with the same name already exists
+            const existingBlockIndex = blocks.findIndex(b => b.name === block.name);
+            
+            if (existingBlockIndex !== -1) {
+                // If block exists, ask for confirmation to overwrite
+                if (confirm(`A block with the name "${block.name}" already exists. Do you want to overwrite it?`)) {
+                    blocks[existingBlockIndex] = block;
+                } else {
+                    return; // Exit if user cancels
+                }
+            } else {
+                // If no existing block found, add as new
+                blocks.push(block);
+            }
 
             // Save blocks to local storage
             localStorage.setItem('blocks', JSON.stringify(blocks));
 
+            // Process shrouds and update block list
             let shroudElements = document.querySelectorAll("#shroudList li");
-            block.shrouds = Array.from(shroudElements).map(li => ({
-                size: li.querySelector(".shroud-size").value,
-                offset: li.querySelector(".shroud-offset").value,
-                taper: li.querySelector(".shroud-taper").value,
-                shape: li.querySelector(".shroud-shape").value
+            block.shrouds = Array.from(shroudElements).map(shroudElement => ({
+                size: shroudElement.querySelector(".shroud-size").value,
+                offset: shroudElement.querySelector(".shroud-offset").value,
+                taper: parseFloat(shroudElement.querySelector(".shroud-taper").value),
+                shape: shroudElement.querySelector(".shroud-shape").value
             }));
 
             updateBlockList();
+            updateBlockPreview();
         }
 
         function deleteBlock(index) {
@@ -690,6 +1044,11 @@
             const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
             
             blockList.innerHTML = '';
+            blockList.style.display = 'grid';
+            blockList.style.gridTemplateColumns = 'repeat(3, 1fr)';
+            blockList.style.gap = '10px';
+            blockList.style.padding = '10px';
+            
             blocks.forEach((block, index) => {
                 // Skip if doesn't match search
                 if (searchTerm && !block.name.toLowerCase().includes(searchTerm) && 
@@ -697,24 +1056,38 @@
                     return;
                 }
                 
+                const blockContainer = document.createElement('div');
+                blockContainer.style.display = 'grid';
+                blockContainer.style.gridTemplateColumns = '1fr';
+                blockContainer.style.gap = '5px';
+                
                 let button = document.createElement('button');
                 button.textContent = `${block.name} (${block.typeargs})`;
                 button.onclick = () => renderAttributes(blocks[index]);
-                blockList.appendChild(button);
+                button.style.width = '100%';
+                blockContainer.appendChild(button);
+                
+                const buttonGroup = document.createElement('div');
+                buttonGroup.style.display = 'grid';
+                buttonGroup.style.gridTemplateColumns = '1fr 1fr';
+                buttonGroup.style.gap = '5px';
                 
                 let deleteBtn = document.createElement('button');
                 deleteBtn.textContent = "Delete";
                 deleteBtn.style.background = "red";
                 deleteBtn.style.color = "white";
                 deleteBtn.onclick = () => deleteBlock(index);
-                blockList.appendChild(deleteBtn);
+                buttonGroup.appendChild(deleteBtn);
 
                 let cloneBtn = document.createElement('button');
                 cloneBtn.textContent = "Clone";
                 cloneBtn.style.background = "orange";
                 cloneBtn.style.color = "white";
                 cloneBtn.onclick = () => cloneBlock(index);
-                blockList.appendChild(cloneBtn);
+                buttonGroup.appendChild(cloneBtn);
+                
+                blockContainer.appendChild(buttonGroup);
+                blockList.appendChild(blockContainer);
             });
         }
 
@@ -1065,20 +1438,23 @@ function stopAutosave() {
     clearInterval(autosaveInterval);
 }
 
-function saveProject() {
-    const projectName = document.getElementById('projectName').value.trim();
-    if (!projectName) {
-        alert("Please enter a project name.");
-        return;
+function showTutorial() {
+    document.getElementById('tutorialModal').style.display = 'block';
+    document.getElementById('tutorialOverlay').style.display = 'block';
+    
+    // Apply dark mode if active
+    if (document.body.classList.contains('dark-mode')) {
+        document.getElementById('tutorialModal').classList.add('dark-mode');
     }
-
-    // Save the current blocks under the project name
-    localStorage.setItem(`project_${projectName}`, JSON.stringify(blocks));
-
-    // Update the project list
-    updateProjectList();
-    alert(`Project "${projectName}" saved successfully.`);
 }
+
+function closeTutorial() {
+    document.getElementById('tutorialModal').style.display = 'none';
+    document.getElementById('tutorialOverlay').style.display = 'none';
+}
+
+// Close tutorial when clicking overlay
+document.getElementById('tutorialOverlay').addEventListener('click', closeTutorial);
 
 </script>
 </body>
