@@ -12,6 +12,7 @@
         .attribute-section { margin-top: 10px; }
         label { width: 97%; display: inline-block; margin-top: 2px; margin-bottom: 2px; }
         input, select { width: 100%; padding: 3px; margin-bottom: 3px; }
+        #searchInput { margin-bottom: 10px; padding: 5px; width: 95%; }
         #exportBtn, #creditsBtn, #loadBtn, #darkModeBtn { margin-top: 10px; padding: 10px; background: green; color: white; border: none; cursor: pointer; }
         #creditsBtn { background: blue; }
         #loadBtn { background-color: green; }
@@ -39,6 +40,7 @@
         <p>Contributors: ChatGPT, Copilot, ClickerAI Assistant</p>
         <button id="closeCredits" onclick="closeCredits()">Close</button>
     </div>
+    <input type="text" id="searchInput" placeholder="Search blocks..." oninput="filterBlocks()">
     <div class="container">
         <div class="panel block-list">
             <h3>1- Select a Block Type</h3>
@@ -82,7 +84,18 @@
             document.querySelectorAll(".panel").forEach(panel => panel.classList.toggle("dark-mode"));
             document.querySelectorAll("input").forEach(input => input.classList.toggle("dark-mode"))
             document.getElementById('creditsPopup').classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+                document.querySelectorAll(".panel").forEach(panel => panel.classList.add("dark-mode"));
+                document.querySelectorAll("input").forEach(input => input.classList.add("dark-mode"));
+                document.getElementById('creditsPopup').classList.add('dark-mode');
+            }
+        });        
         
         function showCredits() {
             document.getElementById('creditsPopup').style.display = 'block';
@@ -93,7 +106,41 @@
         }
 
         function selectBlock(typeargs, generalargs) {
-            renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower: 5, lasercolor: "#ffffff", turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 30000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000", density: 1, shroudsize: 2, shroudoffset: "{0,0,0}", shroudtaper: 1, shroudshape: "SQUARE", tractorRange: 500});
+            renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, spread: 0, projectileSize: 1, roundsPerBurst: 1, burstiness: 0, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower: 5, lasercolor: "#ffffff", turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 30000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000", density: 1, shroudsize: 2, shroudoffset: "{0,0,0}", shroudtaper: 1, shroudshape: "SQUARE", tractorRange: 500});
+        }
+
+        function filterBlocks() {
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            
+            const blockList = document.getElementById('blockList');
+            blockList.innerHTML = '';
+            
+            blocks.forEach((block, index) => {
+                if (!searchTerm || 
+                    block.name.toLowerCase().includes(searchTerm) ||
+                    block.typeargs.toLowerCase().includes(searchTerm)) {
+                    
+                    let button = document.createElement('button');
+                    button.textContent = `${block.name} (${block.typeargs})`;
+                    button.onclick = () => renderAttributes(blocks[index]);
+                    blockList.appendChild(button);
+                    
+                    let deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = "Delete";
+                    deleteBtn.style.background = "red";
+                    deleteBtn.style.color = "white"; 
+                    deleteBtn.onclick = () => deleteBlock(index);
+                    blockList.appendChild(deleteBtn);
+
+                    let cloneBtn = document.createElement('button');
+                    cloneBtn.textContent = "Clone";
+                    cloneBtn.style.background = "orange";
+                    cloneBtn.style.color = "white";
+                    cloneBtn.onclick = () => cloneBlock(index);
+                    blockList.appendChild(cloneBtn);
+                }
+            });
         }
 
         function renderAttributes(block) {
@@ -315,25 +362,24 @@
 
         function saveBlock() {
             let block = {
-                typeargs: document.querySelector('h4').textContent.split(' ')[0],
-                generalargs: document.querySelector('h5').textContent.split(' ')[0],
-                name: document.getElementById('name').value,
-                shape: document.getElementById('shape').value,
-                size: document.getElementById('size').value,
-                group: document.getElementById('group').value,
-                points: document.getElementById('points').value,
-                id: document.getElementById('id').value,
-                health: document.getElementById('health').value,
-                capacity: document.getElementById('capacity').value,
-                points: document.getElementById('points').value,
-                fillColor1: document.getElementById('fillColor1').value,
-                fillColor2: document.getElementById('fillColor2').value,
-                lineColor: document.getElementById('lineColor').value,
-                density: document.getElementById('density').value,
-                spread: document.getElementById('spread').value,
-                projectileSize: document.getElementById('projectileSize').value,
-                roundsPerBurst: document.getElementById('roundsPerBurst').value,
-                burstiness: document.getElementById('burstiness').value,
+                typeargs: document.querySelector('h4') ? document.querySelector('h4').textContent.split(' ')[0] : '',
+                generalargs: document.querySelector('h5') ? document.querySelector('h5').textContent.split(' ')[0] : '',
+                name: document.getElementById('name') ? document.getElementById('name').value : '',
+                shape: document.getElementById('shape') ? document.getElementById('shape').value : '',
+                size: document.getElementById('size') ? document.getElementById('size').value : 0,
+                group: document.getElementById('group') ? document.getElementById('group').value : '',
+                points: document.getElementById('points') ? document.getElementById('points').value : 0,
+                id: document.getElementById('id') ? document.getElementById('id').value : 0,
+                health: document.getElementById('health') ? document.getElementById('health').value : 0,
+                capacity: document.getElementById('capacity') ? document.getElementById('capacity').value : 0,
+                fillColor1: document.getElementById('fillColor1') ? document.getElementById('fillColor1').value : '#000000',
+                fillColor2: document.getElementById('fillColor2') ? document.getElementById('fillColor2').value : '#000000',
+                lineColor: document.getElementById('lineColor') ? document.getElementById('lineColor').value : '#000000',
+                density: document.getElementById('density') ? document.getElementById('density').value : 0,
+                spread: document.getElementById('spread') ? document.getElementById('spread').value : 0,
+                projectileSize: document.getElementById('projectileSize') ? document.getElementById('projectileSize').value : 1,
+                roundsPerBurst: document.getElementById('roundsPerBurst') ? document.getElementById('roundsPerBurst').value : 1,
+                burstiness: document.getElementById('burstiness') ? document.getElementById('burstiness').value : 0,
                 shrouds: [],
                 fragments: []
             };
@@ -458,8 +504,17 @@
 
         function updateBlockList() {
             const blockList = document.getElementById('blockList');
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            
             blockList.innerHTML = '';
             blocks.forEach((block, index) => {
+                // Skip if doesn't match search
+                if (searchTerm && !block.name.toLowerCase().includes(searchTerm) && 
+                    !block.typeargs.toLowerCase().includes(searchTerm)) {
+                    return;
+                }
+                
                 let button = document.createElement('button');
                 button.textContent = `${block.name} (${block.typeargs})`;
                 button.onclick = () => renderAttributes(blocks[index]);
