@@ -1058,7 +1058,7 @@ function startAutosave() {
     autosaveInterval = setInterval(() => {
         saveProject();
         console.log(`Project "${projectName}" autosaved.`);
-    }, 30000); // Autosave every 30 seconds
+    }, 120000); // Autosave every 30 seconds
 }
 
 function stopAutosave() {
