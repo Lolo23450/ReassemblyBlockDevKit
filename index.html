@@ -67,14 +67,15 @@
     </div>
 
     <script>
+
+        let blocks = [];
+
         function toggleDarkMode() {
             document.body.classList.toggle("dark-mode");
             document.querySelectorAll(".panel").forEach(panel => panel.classList.toggle("dark-mode"));
             document.querySelectorAll("input").forEach(input => input.classList.toggle("dark-mode"))
             document.getElementById('creditsPopup').classList.toggle('dark-mode');
         }
-
-        let blocks = [];
         
         function showCredits() {
             document.getElementById('creditsPopup').style.display = 'block';
