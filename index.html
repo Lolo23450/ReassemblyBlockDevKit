@@ -944,12 +944,12 @@
                 });
             }
 
-            // Check if a block with the same name already exists
-            const existingBlockIndex = blocks.findIndex(b => b.name === block.name);
+            // Check if a block with the same ID already exists
+            const existingBlockIndex = blocks.findIndex(b => b.id === block.id);
             
             if (existingBlockIndex !== -1) {
                 // If block exists, ask for confirmation to overwrite
-                if (confirm(`A block with the name "${block.name}" already exists. Do you want to overwrite it?`)) {
+                if (confirm(`A block with ID ${block.id} already exists. Do you want to overwrite it?`)) {
                     blocks[existingBlockIndex] = block;
                 } else {
                     return; // Exit if user cancels
