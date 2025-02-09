@@ -93,10 +93,19 @@
         }
 
         .project-manager-panel {
-            background-color: #333;
+            background-color: #ffffff;
             padding: 20px;
             border-bottom: 2px solid #666;
             margin-bottom: 20px;
+        }
+
+        .project-manager-panel.dark-mode {
+            background-color: #333;
+            border-color: #666;
+            color: white;
+            border-bottom: 2px solid #666;
+            margin-bottom: 20px;
+            transition: background 0.25s, color 0.25s; 
         }
 
         .project-manager-panel h2 {
@@ -236,6 +245,7 @@
             document.querySelectorAll(".panel").forEach(panel => panel.classList.toggle("dark-mode"));
             document.querySelectorAll("input").forEach(input => input.classList.toggle("dark-mode"))
             document.getElementById('creditsPopup').classList.toggle('dark-mode');
+            document.querySelector('.project-manager-panel').classList.toggle('dark-mode'); // Add this line
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
