@@ -10,8 +10,8 @@
         .panel { width: 50%; padding: 10px; border: 1px solid #c0bcbc; margin-right: 10px; background: white; transition: background 0.3s; }
         .block-list button { display: block; margin: 6px; padding: 10px; width: 97%; transition: background 0.25s, color 0.25s; }
         .attribute-section { margin-top: 10px; }
-        label { width: 97%; display: block; margin-top: 5px; }
-        input, select { width: 100%; padding: 5px; margin-bottom: 5px; }
+        label { width: 97%; display: inline-block; margin-top: 2px; margin-bottom: 2px; }
+        input, select { width: 100%; padding: 3px; margin-bottom: 3px; }
         #exportBtn, #creditsBtn, #loadBtn, #darkModeBtn { margin-top: 10px; padding: 10px; background: green; color: white; border: none; cursor: pointer; }
         #creditsBtn { background: blue; }
         #loadBtn { background-color: green; }
@@ -56,11 +56,18 @@
             <h3>2- Select Block Attributes</h3>
             <div id="blockattributes"></div>
             <div id="attributes"></div>
-            <h3>Shrouds</h3>
-            <ul id="shroudList"></ul>
+            <div id="shroudSection" style="display: none;">
+                <h3>Shrouds</h3>
+                <ul id="shroudList"></ul>
+            </div>
+            <div id="fragmentSection" style="display: none;">
+                <h3>Fragments (WIP, Only 1 Fragment per Cannon)</h3>
+                <ul id="fragmentList"></ul>
+            </div>
             <button id="exportBtn" onclick="exportBlocks()">Export blocks.lua</button>
         </div>
         <div class="panel block-list">
+
             <h3>Created Blocks</h3>
             <ul id="blockList"></ul>
         </div>
@@ -90,9 +97,12 @@
         }
 
         function renderAttributes(block) {
+            const shroudSection = document.getElementById('shroudSection');
+            shroudSection.style.display = 'block';
             const featureAttributesDiv = document.getElementById('attributes');
             const blockAttributesDiv = document.getElementById('blockattributes');
             const shroudList = document.getElementById('shroudList');
+            const fragmentList = document.getElementById('fragmentList');
             featureAttributesDiv.innerHTML = `<h4>${block.typeargs} Attributes</h4>`;
             blockAttributesDiv.innerHTML = `<h5>General Attributes</h5>`;
             let blockAttributesHTML = `<label>Name: <input type="text" id="name" value="${block.name}"></label>`;
@@ -112,13 +122,21 @@
             let attributesHTML = '';
             
             if (block.typeargs === 'Cannon') {
+                fragmentSection.style.display = 'block';
                 attributesHTML += `
-                    <label>Turreted (True/False): <input type="text" id="turreted" value="${block.turreted}"></label>
+                    <label>Turreted: <select id="turreted">
+                        <option value="True" ${block.turreted === "True" ? "selected" : ""}>True</option>
+                        <option value="False" ${block.turreted === "False" ? "selected" : ""}>False</option>
+                    </select></label>
                     <label>Damage: <input type="number" id="damage" value="${block.cannondmg}"></label>
                     <label>Rounds per Sec: <input type="number" id="roundsPerSec" value="${block.cannonrounds}"></label>
                     <label>Range: <input type="number" id="range" value="${block.cannonrange}"></label>
                     <label>Shot Velocity: <input type="number" id="muzzleVel" value="${block.cannonvel}"></label>
                     <label>Power: <input type="number" id="power" value="${block.cannonpower}"></label>
+                    <label>Spread (0-3.6): <input type="number" id="spread" min="0" max="3.6" step="0.1" value="${block.spread || 0}"></label>
+                    <label>Projectile Size (1-100): <input type="number" id="projectileSize" min="1" max="100" value="${block.projectileSize || 1}"></label>
+                    <label>Rounds per Burst (1-100): <input type="number" id="roundsPerBurst" min="1" max="100" value="${block.roundsPerBurst || 1}"></label>
+                    <label>Burstyness (0-1): <input type="number" id="burstiness" min="0" max="1" step="0.1" value="${block.burstiness || 0}"></label>
                 `;
             } else if (block.typeargs === 'Laser') {
                 attributesHTML += `
@@ -157,6 +175,7 @@
                 `;
             }
             if (!block.shrouds) block.shrouds = [];
+            if (!block.fragments) block.fragments = [];
 
             // Repopulate shroud list
             block.shrouds.forEach((shroud, index) => {
@@ -174,10 +193,24 @@
                 shroudList.appendChild(shroudItem);
             });
 
+            // Repopulate fragment list if it's a cannon
+            if (block.typeargs === 'Cannon') {
+                block.fragments.forEach((fragment, index) => {
+                    let fragmentItem = document.createElement("li");
+                    fragmentItem.innerHTML = `
+                        <label>Spread: <input type="number" class="fragment-spread" value="${fragment.spread}" data-index="${index}"></label>
+                        <label>Range: <input type="number" class="fragment-range" value="${fragment.range}" data-index="${index}"></label>
+                        <button onclick="removeFragment(${index})">Remove</button>
+                    `;
+                    fragmentList.appendChild(fragmentItem);
+                });
+                fragmentList.innerHTML += `<button onclick="addFragment()">Add Fragment</button>`;
+            }
+
             attributesHTML += `<button onclick="saveBlock()">Add Block</button>`;
             blockAttributesDiv.innerHTML += blockAttributesHTML;
             featureAttributesDiv.innerHTML += attributesHTML;
-            shroudList.innerHTML += shroudListHTML
+            shroudList.innerHTML += shroudListHTML;
         }
 
         function addShroud() {
@@ -209,11 +242,67 @@
             shroudList.appendChild(shroudItem);
 
             block.shrouds.push({
-                size: "{5,5}",
-                offset: "{0,0,0}",
-                taper: 1,
-                shape: "SQUARE"
+                size: document.querySelector(`.shroud-size[data-index="${shroudIndex}"]`).value,
+                offset: document.querySelector(`.shroud-offset[data-index="${shroudIndex}"]`).value,
+                taper: document.querySelector(`.shroud-taper[data-index="${shroudIndex}"]`).value,
+                shape: document.querySelector(`.shroud-shape[data-index="${shroudIndex}"]`).value
             });
+        }
+
+        function addFragment() {
+            let block = blocks.find(b => b.name === document.getElementById('name').value);
+            if (!block || block.typeargs !== "Cannon") return;
+
+            if (!block.fragments) block.fragments = [];
+
+            let fragmentList = document.getElementById("fragmentList");
+            let fragmentIndex = block.fragments.length;
+            let fragmentItem = document.createElement("li");
+
+            fragmentItem.innerHTML = `
+                <label>Spread: <input type="number" class="fragment-spread" value="0.2" data-index="${fragmentIndex}"></label>
+                <label>Range: <input type="number" class="fragment-range" value="200" data-index="${fragmentIndex}"></label>
+                <label>Damage: <input type="number" class="fragment-damage" value="10" data-index="${fragmentIndex}"></label>
+                <label>Shot Velocity: <input type="number" class="fragment-muzzleVel" value="500" data-index="${fragmentIndex}"></label>
+                <label>Projectile Size: <input type="number" class="fragment-projectileSize" value="1" data-index="${fragmentIndex}"></label>
+                <label>Rounds Per Burst: <input type="number" class="fragment-roundsPerBurst" value="3" data-index="${fragmentIndex}"></label>
+                <button onclick="removeFragment(${fragmentIndex})">Remove</button>
+            `;
+
+            fragmentList.appendChild(fragmentItem);
+
+            block.fragments.push({
+                spread: document.querySelector(`.fragment-spread[data-index="${fragmentIndex}"]`).value,
+                range: document.querySelector(`.fragment-range[data-index="${fragmentIndex}"]`).value,
+                damage: document.querySelector(`.fragment-damage[data-index="${fragmentIndex}"]`).value,
+                muzzleVel: document.querySelector(`.fragment-muzzleVel[data-index="${fragmentIndex}"]`).value,
+                projectileSize: document.querySelector(`.fragment-projectileSize[data-index="${fragmentIndex}"]`).value,
+                roundsPerBurst: document.querySelector(`.fragment-roundsPerBurst[data-index="${fragmentIndex}"]`).value
+            });
+        }
+
+        function removeFragment(index) {
+            const block = blocks.find(b => b.name === document.getElementById('name').value);
+            if (block && block.fragments) {
+                // Remove the fragment element from the DOM
+                const fragmentList = document.getElementById('fragmentList');
+                const fragmentElements = fragmentList.getElementsByTagName('li');
+                if (fragmentElements[index]) {
+                    fragmentElements[index].remove();
+                }
+                
+                // Remove the fragment from the data
+                block.fragments.splice(index, 1);
+                
+                // Update indices of remaining fragments
+                const remainingInputs = fragmentList.querySelectorAll('input');
+                remainingInputs.forEach(input => {
+                    const currentIndex = parseInt(input.dataset.index);
+                    if (currentIndex > index) {
+                        input.dataset.index = currentIndex - 1;
+                    }
+                });
+            }
         }
 
         function removeShroud(index) {
@@ -241,7 +330,12 @@
                 fillColor2: document.getElementById('fillColor2').value,
                 lineColor: document.getElementById('lineColor').value,
                 density: document.getElementById('density').value,
-                shrouds: []
+                spread: document.getElementById('spread').value,
+                projectileSize: document.getElementById('projectileSize').value,
+                roundsPerBurst: document.getElementById('roundsPerBurst').value,
+                burstiness: document.getElementById('burstiness').value,
+                shrouds: [],
+                fragments: []
             };
             if (block.typeargs === "Cannon") {
                 Object.assign(block, {
@@ -352,9 +446,14 @@
             shroudtaper: blockToClone.shroudtaper,
             shroudshape: blockToClone.shroudshape,
             tractorRange: blockToClone.tractorRange,
+            spread: blockToClone.spread,
+            projectileSize: blockToClone.projectileSize,
+            roundsPerBurst: blockToClone.roundsPerBurst,
+            burstiness: blockToClone.burstiness,
         };
         blocks.push(clonedBlock);
         updateBlockList();
+
     }
 
         function updateBlockList() {
@@ -408,12 +507,47 @@
                     luaCode += `        features = PALETTE|CANNON,\n`;
                 }
                 luaCode += `        cannon = {\n`;
-                luaCode += `            damage = ${block.cannondmg},\n`;
-                luaCode += `            roundsPerSec = ${block.cannonrounds},\n`;
-                luaCode += `            range = ${block.cannonrange},\n`;
-                luaCode += `            muzzleVel = ${block.cannonvel},\n`;
-                luaCode += `            power = ${block.cannonpower},\n`;
-                luaCode += `        },\n`;
+                luaCode += `            damage = ${block.cannondmg || 0},\n`;
+                luaCode += `            roundsPerSec = ${block.cannonrounds || 0},\n`;
+                luaCode += `            range = ${block.cannonrange || 0},\n`;
+                luaCode += `            muzzleVel = ${block.cannonvel || 0},\n`;
+                luaCode += `            power = ${block.cannonpower || 0},\n`;
+                luaCode += `            spread = ${block.spread || 0},\n`;
+                luaCode += `            projectileSize = ${block.projectileSize || 1},\n`;
+                luaCode += `            roundsPerBurst = ${block.roundsPerBurst || 1},\n`;
+                luaCode += `            burstyness = ${block.burstiness || 0}`;
+
+                // Handle fragments with proper nesting
+                if (block.fragments && block.fragments.length > 0) {
+                    let fragmentString = '';
+                    // Process fragments in reverse to create nested structure
+                    for (let i = block.fragments.length - 1; i >= 0; i--) {
+                        const fragment = block.fragments[i];
+                        if (i === block.fragments.length - 1) {
+                            // Last fragment (innermost)
+                            fragmentString = `,\n            fragment = {\n` +
+                                `                spread = ${fragment.spread || 0},\n` +
+                                `                range = ${fragment.range || 0},\n` +
+                                `                damage = ${fragment.damage || 0},\n` +
+                                `                muzzleVel = ${fragment.muzzleVel || 0},\n` +
+                                `                projectileSize = ${fragment.projectileSize || 1},\n` +
+                                `                roundsPerBurst = ${fragment.roundsPerBurst || 1}\n` +
+                                `            }`;
+                        } else {
+                            // Wrap previous fragment string in new fragment
+                            fragmentString = `,\n            fragment = {\n` +
+                                `                spread = ${fragment.spread || 0},\n` +
+                                `                range = ${fragment.range || 0},\n` +
+                                `                damage = ${fragment.damage || 0},\n` +
+                                `                muzzleVel = ${fragment.muzzleVel || 0},\n` +
+                                `                projectileSize = ${fragment.projectileSize || 1},\n` +
+                                `                roundsPerBurst = ${fragment.roundsPerBurst || 1}` +
+                                fragmentString + `\n            }`;
+                        }
+                    }
+                    luaCode += fragmentString;
+                }
+                luaCode += `\n        },\n`;
             } else if (block.typeargs === 'Laser') {
                 if (block.turreted === 'True') {
                     luaCode += `        features = PALETTE|LASER|TURRET,\n`;
