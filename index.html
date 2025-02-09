@@ -242,6 +242,7 @@
 
             // Repopulate fragment list if it's a cannon
             if (block.typeargs === 'Cannon') {
+                fragmentList.innerHTML = ''; // Clear fragment list first
                 block.fragments.forEach((fragment, index) => {
                     let fragmentItem = document.createElement("li");
                     fragmentItem.innerHTML = `
@@ -251,7 +252,10 @@
                     `;
                     fragmentList.appendChild(fragmentItem);
                 });
-                fragmentList.innerHTML += `<button onclick="addFragment()">Add Fragment</button>`;
+                let addFragmentBtn = document.createElement("button");
+                addFragmentBtn.textContent = "Add Fragment";
+                addFragmentBtn.onclick = addFragment;
+                fragmentList.appendChild(addFragmentBtn);
             }
 
             attributesHTML += `<button onclick="saveBlock()">Add Block</button>`;
