@@ -71,23 +71,126 @@
         .delete-button:hover {
             background-color: #C0392B;
         }
+
+        .styled-checkbox {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .styled-checkbox input[type="checkbox"] {
+            margin-right: 5px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        .project-manager-panel {
+            background-color: #333;
+            padding: 20px;
+            border-bottom: 2px solid #666;
+            margin-bottom: 20px;
+        }
+
+        .project-manager-panel h2 {
+            margin-top: 0;
+        }
+
+        .project-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #projectName {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 200px;
+        }
+
+        .styled-button {
+            padding: 8px 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .styled-button:hover {
+            background-color: #0056b3;
+        }
+
+        .styled-select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .delete-button {
+            background-color: #FF4136;
+        }
+
+        .delete-button:hover {
+            background-color: #C0392B;
+        }
+
+        .styled-checkbox {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .styled-checkbox input[type="checkbox"] {
+            margin-right: 5px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
+
     <h1>Reassembly Block Development Kit</h1>
     <button id="creditsBtn" onclick="showCredits()">Credits</button>
     <button id="darkModeBtn" onclick="toggleDarkMode()">Toggle Dark/Light Mode</button>
     <button id="exportBtn" onclick="exportBlocks()">Export blocks.lua</button>
     <button id="loadBtn" onclick="loadBlocks()">Load blocks.lua (WIP)</button>
     <button id="clearStorageBtn" onclick="clearSavedBlocks()">Clear Saved Blocks</button>
-    <div class="project-controls">
-        <input type="text" id="projectName" placeholder="Enter project name">
-        <button class="styled-button" onclick="saveProject()">Save Project</button>
-        <button class="styled-button" onclick="loadProject()">Load Project</button>
-        <select id="projectList" class="styled-select" onchange="loadSelectedProject()">
-            <option value="">Select a project</option>
-        </select>
-        <button class="styled-button delete-button" onclick="deleteProject()">Delete Project</button>
+    <div class="project-manager-panel">
+        <h2>Project Manager</h2>
+        <div class="project-controls">
+            <input type="text" id="projectName" placeholder="Enter project name">
+            <button class="styled-button" onclick="saveProject()">Save Project</button>
+            <button class="styled-button" onclick="loadProject()">Load Project</button>
+            <select id="projectList" class="styled-select" onchange="loadSelectedProject()">
+                <option value="">Select a project</option>
+            </select>
+            <button class="styled-button delete-button" onclick="deleteProject()">Delete Project</button>
+            <label class="styled-checkbox">
+                <input type="checkbox" id="autosaveToggle" onchange="toggleAutosave()"> Autosave
+            </label>
+        </div>
+    </div>
+
+    <div id="creditsPopup">
+        <h2>Credits</h2>
+        <p>Developed by: Lolo</p>
+        <p>Contributors: ChatGPT, Copilot, ClickerAI Assistant</p>
+        <button id="closeCredits" onclick="closeCredits()">Close</button>
     </div>
     <input type="text" id="searchInput" placeholder="Search blocks..." oninput="filterBlocks()">
     <div class="container">
@@ -122,13 +225,6 @@
             <h3>Created Blocks</h3>
             <ul id="blockList"></ul>
         </div>
-    </div>
-
-    <div id="creditsPopup">
-        <h2>Credits</h2>
-        <p>Developed by: Lolo</p>
-        <p>Contributors: ChatGPT, Copilot, ClickerAI Assistant</p>
-        <button id="closeCredits" onclick="closeCredits()">Close</button>
     </div>
 
     <script>
@@ -481,7 +577,7 @@
                     laserrange: document.getElementById('laserrange').value,
                     laserwidth: document.getElementById('laserwidth').value,
                     laserpower: document.getElementById('laserpower').value,
-                    lasercolor: document.getElementById('lasercolor'),
+                    lasercolor: document.getElementById('lasercolor').value,
                     turreted: document.getElementById('turreted').value,
                 });
             } else if (block.typeargs === "Shield") {
@@ -905,6 +1001,73 @@ function updateProjectList() {
             projectList.appendChild(option);
         }
     }
+}
+
+// Initialize project list on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateProjectList();
+});
+
+function updateProjectList() {
+    const projectList = document.getElementById('projectList');
+    projectList.innerHTML = '<option value="">Select a project</option>';
+
+    // Iterate over localStorage keys to find projects
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('project_')) {
+            const projectName = key.replace('project_', '');
+            const option = document.createElement('option');
+            option.value = projectName;
+            option.textContent = projectName;
+            projectList.appendChild(option);
+        }
+    }
+}
+
+let autosaveInterval;
+let autosaveEnabled = false;
+
+function toggleAutosave() {
+    autosaveEnabled = document.getElementById('autosaveToggle').checked;
+    if (autosaveEnabled) {
+        startAutosave();
+    } else {
+        stopAutosave();
+    }
+}
+
+function startAutosave() {
+    const projectName = document.getElementById('projectName').value.trim();
+    if (!projectName) {
+        alert("Please enter a project name to enable autosave.");
+        document.getElementById('autosaveToggle').checked = false;
+        return;
+    }
+
+    autosaveInterval = setInterval(() => {
+        saveProject();
+        console.log(`Project "${projectName}" autosaved.`);
+    }, 30000); // Autosave every 30 seconds
+}
+
+function stopAutosave() {
+    clearInterval(autosaveInterval);
+}
+
+function saveProject() {
+    const projectName = document.getElementById('projectName').value.trim();
+    if (!projectName) {
+        alert("Please enter a project name.");
+        return;
+    }
+
+    // Save the current blocks under the project name
+    localStorage.setItem(`project_${projectName}`, JSON.stringify(blocks));
+
+    // Update the project list
+    updateProjectList();
+    alert(`Project "${projectName}" saved successfully.`);
 }
 
 </script>
