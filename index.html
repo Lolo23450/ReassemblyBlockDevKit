@@ -13,7 +13,7 @@
         label { width: 97%; display: inline-block; margin-top: 2px; margin-bottom: 2px; }
         input, select { width: 100%; padding: 3px; margin-bottom: 3px; }
         #searchInput { margin-bottom: 10px; padding: 5px; width: 95%; }
-        #exportBtn, #creditsBtn, #loadBtn, #darkModeBtn, #clearStorageBtn, #tutorialBtn { margin-top: 10px; padding: 10px; background: green; color: white; border: none; cursor: pointer; }        #creditsBtn { background: blue; }
+        #exportBtn, #creditsBtn, #loadBtn, #darkModeBtn, #clearStorageBtn, #tutorialBtn, #compareBtn { margin-top: 10px; padding: 10px; background: green; color: white; border: none; cursor: pointer; }        #creditsBtn { background: blue; }
         #loadBtn { background-color: green; }
         #darkModeBtn { background-color: blue; }
         #clearStorageBtn { background-color: red; }
@@ -272,6 +272,81 @@
         .shape-TRI {
             clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
         }
+
+        .comparison-panel {
+            flex: 2;  /* Take up the same space as the two panels it replaces */
+            margin: 10px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .comparison-select {
+            display: flex;
+            gap: 10px;
+        }
+
+        .comparison-previews {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .comparison-table tr.different {
+            background-color: #fff3cd;
+        }
+
+        .dark-mode .comparison-table tr.different {
+            background-color: #2c2c2c;
+        }
+
+        .dark-mode .comparison-panel {
+            background-color: #1a1a1a;
+            border-color: #333;
+        }
+
+        .dark-mode .comparison-table th,
+        .dark-mode .comparison-table td {
+            border-color: #333;
+        }
+
+        /* ... existing comparison styles ... */
+
+        .comparison-table tr.higher-dps {
+            background-color: #d4edda;
+        }
+
+        .comparison-table tr.lower-dps {
+            background-color: #f8d7da;
+        }
+
+        .dark-mode .comparison-table tr.higher-dps {
+            background-color: #1e3320;
+        }
+
+        .dark-mode .comparison-table tr.lower-dps {
+            background-color: #382020;
+        }
     </style>
 </head>
 <body>
@@ -283,6 +358,8 @@
     <button id="exportBtn" onclick="exportBlocks()">Export blocks.lua</button>
     <button id="loadBtn" onclick="loadBlocks()">Load blocks.lua (WIP)</button>
     <button id="clearStorageBtn" onclick="clearSavedBlocks()">Clear Saved Blocks</button>
+    <button id="compareBtn" onclick="showComparison()" style="background: #007BFF; color: white; margin-right: 10px;">Compare Blocks</button>
+
     <div class="project-manager-panel">
         <h2>Project Manager</h2>
         <div class="project-controls">
@@ -382,6 +459,28 @@
             <p>- Use dark/light mode toggle for better visibility<br>
             - Save your work frequently<br>
             - Make backup copies of important projects</p>
+        </div>
+    </div>
+
+    <!-- Add this HTML section after your existing panels -->
+    <div class="panel comparison-panel" style="display: none;" id="comparisonPanel">
+        <h3>Block Comparison</h3>
+        <div class="comparison-controls">
+            <div class="comparison-select">
+                <select id="block1Select" onchange="updateComparison()">
+                    <option value="">Select Block 1</option>
+                </select>
+                <select id="block2Select" onchange="updateComparison()">
+                    <option value="">Select Block 2</option>
+                </select>
+            </div>
+        </div>
+        <div class="comparison-content">
+            <div class="comparison-previews">
+                <div id="preview1" class="block-preview"></div>
+                <div id="preview2" class="block-preview"></div>
+            </div>
+            <div class="comparison-details"></div>
         </div>
     </div>
 
@@ -1455,6 +1554,201 @@ function closeTutorial() {
 
 // Close tutorial when clicking overlay
 document.getElementById('tutorialOverlay').addEventListener('click', closeTutorial);
+
+function showComparison() {
+    const comparisonPanel = document.getElementById('comparisonPanel');
+    const typeSelectionPanel = document.querySelector('.block-list:not(:last-child)');
+    const attributesPanel = document.querySelector('.panel:not(.block-list)');
+    
+    // Toggle comparison mode
+    if (comparisonPanel.style.display === 'block') {
+        // Switch back to normal mode
+        comparisonPanel.style.display = 'none';
+        typeSelectionPanel.style.display = 'block';
+        attributesPanel.style.display = 'block';
+        
+        // Clear comparison selections
+        document.getElementById('block1Select').value = '';
+        document.getElementById('block2Select').value = '';
+    } else {
+        // Switch to comparison mode
+        comparisonPanel.style.display = 'block';
+        typeSelectionPanel.style.display = 'none';
+        attributesPanel.style.display = 'none';
+        
+        // Move comparison panel to the correct position
+        const container = document.querySelector('.container');
+        container.insertBefore(comparisonPanel, document.querySelector('.block-list:last-child'));
+        
+        // Populate select boxes
+        const select1 = document.getElementById('block1Select');
+        const select2 = document.getElementById('block2Select');
+        select1.innerHTML = '<option value="">Select Block 1</option>';
+        select2.innerHTML = '<option value="">Select Block 2</option>';
+        
+        blocks.forEach(block => {
+            const option1 = document.createElement('option');
+            const option2 = document.createElement('option');
+            option1.value = option2.value = block.id;
+            option1.textContent = option2.textContent = `${block.name} (${block.typeargs})`;
+            select1.appendChild(option1);
+            select2.appendChild(option2.cloneNode(true));
+        });
+    }
+}
+
+function updateComparison() {
+    const block1Id = document.getElementById('block1Select').value;
+    const block2Id = document.getElementById('block2Select').value;
+    
+    if (!block1Id || !block2Id) return;
+    
+    const block1 = blocks.find(b => b.id == block1Id);
+    const block2 = blocks.find(b => b.id == block2Id);
+    
+    // Update previews
+    const preview1 = document.getElementById('preview1');
+    const preview2 = document.getElementById('preview2');
+    
+    // Create temporary elements to use existing preview function
+    const tempDiv = document.createElement('div');
+    tempDiv.id = 'blockPreview';
+    
+    // Preview block 1
+    document.getElementById('blockPreview').replaceWith(tempDiv);
+    renderAttributes(block1);
+    preview1.innerHTML = document.getElementById('blockPreview').innerHTML;
+    
+    // Preview block 2
+    document.getElementById('blockPreview').replaceWith(tempDiv.cloneNode(true));
+    renderAttributes(block2);
+    preview2.innerHTML = document.getElementById('blockPreview').innerHTML;
+    
+    // Restore original preview div
+    document.getElementById('blockPreview').replaceWith(tempDiv);
+    
+    // Compare and display differences
+    const comparisonDetails = document.querySelector('.comparison-details');
+    comparisonDetails.innerHTML = generateComparisonTable(block1, block2);
+}
+
+function calculateDPS(block) {
+    if (block.typeargs === 'Cannon') {
+        const damage = parseFloat(block.cannondmg) || 0;
+        const roundsPerSec = parseFloat(block.cannonrounds) || 0;
+        const roundsPerBurst = parseFloat(block.roundsPerBurst) || 1;
+        
+        // Calculate fragments DPS if they exist
+        let fragmentDPS = 0;
+        if (block.fragments && block.fragments.length > 0) {
+            block.fragments.forEach(fragment => {
+                const fragmentDamage = parseFloat(fragment.damage) || 0;
+                const fragmentRounds = parseFloat(fragment.roundsPerBurst) || 1;
+                fragmentDPS += fragmentDamage * fragmentRounds;
+            });
+            // Fragment DPS is per shot, so multiply by rounds per second
+            fragmentDPS *= roundsPerSec;
+        }
+        
+        // Base DPS + Fragment DPS
+        return (damage * roundsPerSec * roundsPerBurst) + fragmentDPS;
+    } 
+    else if (block.typeargs === 'Laser') {
+        const damage = parseFloat(block.laserdmg) || 0;
+        // Lasers do continuous damage, so DPS is just the damage value
+        return damage;
+    }
+    return 0;
+}
+
+function generateComparisonTable(block1, block2) {
+    const commonProperties = [
+        { key: 'name', label: 'Name' },
+        { key: 'typeargs', label: 'Type' },
+        { key: 'size', label: 'Size' },
+        { key: 'shape', label: 'Shape' },
+        { key: 'points', label: 'Points' },
+        { key: 'health', label: 'Health' },
+        { key: 'capacity', label: 'Capacity' }
+    ];
+    
+    // Add type-specific properties
+    if (block1.typeargs === 'Cannon' || block2.typeargs === 'Cannon') {
+        commonProperties.push(
+            { key: 'cannondmg', label: 'Damage per Shot' },
+            { key: 'cannonrounds', label: 'Rounds/s' },
+            { key: 'cannonrange', label: 'Range' },
+            { key: 'cannonvel', label: 'Velocity' },
+            { key: 'cannonpower', label: 'Power' },
+            { key: 'roundsPerBurst', label: 'Rounds per Burst' },
+            { 
+                key: 'dps', 
+                label: 'DPS', 
+                calculate: (block) => calculateDPS(block).toFixed(2)
+            }
+        );
+    }
+    if (block1.typeargs === 'Laser' || block2.typeargs === 'Laser') {
+        commonProperties.push(
+            { key: 'laserdmg', label: 'DPS' },
+            { key: 'laserrange', label: 'Range' },
+            { key: 'laserwidth', label: 'Width' },
+            { key: 'laserpower', label: 'Power' }
+        );
+    }
+    
+    let html = `
+        <table class="comparison-table">
+            <tr>
+                <th>Property</th>
+                <th>${block1.name}</th>
+                <th>${block2.name}</th>
+                <th>Difference</th>
+            </tr>
+    `;
+    
+    commonProperties.forEach(prop => {
+        let val1, val2;
+        if (prop.calculate) {
+            val1 = prop.calculate(block1);
+            val2 = prop.calculate(block2);
+        } else {
+            val1 = block1[prop.key];
+            val2 = block2[prop.key];
+        }
+        
+        const isDifferent = val1 !== val2;
+        let difference = '';
+        
+        // Calculate difference for numeric values
+        if (!isNaN(val1) && !isNaN(val2)) {
+            difference = (val2 - val1).toFixed(2);
+            // Add percentage difference for DPS
+            if (prop.key === 'dps' || (prop.key === 'laserdmg' && (block1.typeargs === 'Laser' || block2.typeargs === 'Laser'))) {
+                const percentDiff = ((val2 - val1) / val1 * 100).toFixed(1);
+                difference += ` (${percentDiff}%)`;
+            }
+        }
+        
+        // Add color coding for DPS comparison
+        let rowClass = isDifferent ? 'different' : '';
+        if ((prop.key === 'dps' || (prop.key === 'laserdmg' && (block1.typeargs === 'Laser' || block2.typeargs === 'Laser'))) && isDifferent) {
+            rowClass += val2 > val1 ? ' higher-dps' : ' lower-dps';
+        }
+        
+        html += `
+            <tr class="${rowClass}">
+                <td>${prop.label}</td>
+                <td>${val1 || '-'}</td>
+                <td>${val2 || '-'}</td>
+                <td>${difference}</td>
+            </tr>
+        `;
+    });
+    
+    html += '</table>';
+    return html;
+}
 
 </script>
 </body>
