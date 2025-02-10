@@ -1661,7 +1661,7 @@ function generateComparisonTable(block1, block2) {
         { key: 'size', label: 'Size' },
         { key: 'shape', label: 'Shape' },
         { key: 'points', label: 'Points' },
-        { key: 'health', label: 'Health' },
+        { key: 'health', label: 'Durability' },
         { key: 'capacity', label: 'Capacity' }
     ];
     
@@ -1674,6 +1674,9 @@ function generateComparisonTable(block1, block2) {
             { key: 'cannonvel', label: 'Velocity' },
             { key: 'cannonpower', label: 'Power' },
             { key: 'roundsPerBurst', label: 'Rounds per Burst' },
+            { key: 'burstiness', label: 'Burstyness' },
+            { key: 'projectileSize', label: 'Projectile Size' },
+            { key: 'spread', label: 'Spread' },
             { 
                 key: 'dps', 
                 label: 'DPS', 
@@ -1686,12 +1689,50 @@ function generateComparisonTable(block1, block2) {
             { key: 'laserdmg', label: 'DPS' },
             { key: 'laserrange', label: 'Range' },
             { key: 'laserwidth', label: 'Width' },
-            { key: 'laserpower', label: 'Power' }
+            { key: 'laserpower', label: 'Power' },
+            { key: 'lasercolor', label: 'Color' }
         );
     }
-    
+
+
+    if (block1.typeargs === 'Generator' || block2.typeargs === 'Generator') {
+        commonProperties.push(
+            { key: 'powerCapacity', label: 'Power Capacity' },
+            { key: 'generatorCapacityPerSec', label: 'Generation per Sec' }
+        );
+    }
+
+    if (block1.typeargs === 'Command' || block2.typeargs === 'Command') {
+        commonProperties.push(
+            { key: 'faction', label: 'Faction' }
+        );
+    }
+
+    if (block1.typeargs === 'Thruster' || block2.typeargs === 'Thruster') {
+        commonProperties.push(
+            { key: 'thrust', label: 'Thrust' },
+        );
+    }
+
+    if (block1.typeargs === 'Shield' || block2.typeargs === 'Shield') {
+        commonProperties.push(
+            { key: 'shieldradius', label: 'Radius' },
+            { key: 'shieldpower', label: 'Power' },
+            { key: 'shieldhealth', label: 'Health' },
+            { key: 'shieldregen', label: 'Regen/s' }
+        );
+    }
+
+    if (block1.typeargs === 'Tractor' || block2.typeargs === 'Tractor') {
+        commonProperties.push(
+            { key: 'tractorRange', label: 'TractorRange' }
+        );
+    }
+
     let html = `
         <table class="comparison-table">
+
+
             <tr>
                 <th>Property</th>
                 <th>${block1.name}</th>
