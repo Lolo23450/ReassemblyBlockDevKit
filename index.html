@@ -397,7 +397,7 @@
     <div class="modal-overlay" id="tutorialOverlay"></div>
     <div id="tutorialModal">
         <button id="closeTutorial" onclick="closeTutorial()">×</button>
-        <h2>How to Use the Block Development Kit</h2>
+        <h2>How to Use the Reassembly Block Development Kit (RBDK)</h2>
         
         <div class="tutorial-step">
             <h4>Step 1: Project Management</h4>
@@ -465,6 +465,7 @@
 
         let blocks = [];
 
+        // Dark mode toggle
         function toggleDarkMode() {
             document.body.classList.toggle("dark-mode");
             document.querySelectorAll(".panel").forEach(panel => panel.classList.toggle("dark-mode"));
@@ -476,6 +477,7 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
+        // Load dark mode preference
         document.addEventListener('DOMContentLoaded', () => {
             // Load dark mode preference
             if (localStorage.getItem('darkMode') === 'true') {
@@ -498,15 +500,17 @@
             updateProjectList();
             initializeDropZones();
         });        
-        
+        // Function to show credits
         function showCredits() {
             document.getElementById('creditsPopup').style.display = 'block';
         }
 
+        // Function to close credits
         function closeCredits() {
             document.getElementById('creditsPopup').style.display = 'none';
         }
 
+        // Function to select a block
         function selectBlock(type) {
             // Don't process block selection if in comparison mode
             if (document.getElementById('comparisonPanel').style.display === 'block') {
@@ -517,6 +521,7 @@
             updateBlockPreview();
         }
 
+        // Function to filter blocks on search bar
         function filterBlocks() {
             const searchInput = document.getElementById('searchInput');
             const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
@@ -572,6 +577,7 @@
             });
         }
 
+        // Function to update block previews
         function updateBlockPreview() {
             const previewDiv = document.getElementById('blockPreview');
             const size = document.getElementById('size') ? Math.min(parseFloat(document.getElementById('size').value), 20) : 1;
@@ -668,6 +674,7 @@
                         `;
                     }
 
+                    // Generate turret HTML
                     turretHTML = `
                         <div class="preview-turret" style="
                             position: absolute;
@@ -740,6 +747,7 @@
             `;
         }
 
+        // Function to render block attributes
         function renderAttributes(block) {
             const shroudSection = document.getElementById('shroudSection');
             shroudSection.style.display = 'block';
@@ -765,6 +773,7 @@
             let shroudListHTML = `<button onclick="addShroud()">Add Shroud</button>`;
             let attributesHTML = '';
             
+            // Cannon attributes
             if (block.typeargs === 'Cannon') {
                 fragmentSection.style.display = 'block';
                 attributesHTML += `
@@ -782,6 +791,8 @@
                     <label>Rounds per Burst (1-100): <input type="number" id="roundsPerBurst" min="1" max="100" value="${block.roundsPerBurst || 1}" oninput="this.value = Math.min(Math.max(this.value, 1), 100)"></label>
                     <label>Burstyness (0-1): <input type="number" id="burstiness" min="0" max="1" step="0.1" value="${block.burstiness || 0}" oninput="this.value = Math.min(Math.max(this.value, 0), 1)"></label>
                 `;
+
+            // Laser attributes
             } else if (block.typeargs === 'Laser') {
                 attributesHTML += `
                     <label>Turreted (True/False): <input type="text" id="turreted" value="${block.turreted}"></label>
@@ -791,19 +802,23 @@
                     <label>Power: <input type="number" id="laserpower" value="${block.laserpower}"></label>
                     <label>Color: <input type="color" id="lasercolor" value="${block.lasercolor}"></label>
                 `;
+            // Generator attributes
             } else if (block.typeargs === 'Generator') {
                 attributesHTML += `
                     <label>Power Capacity: <input type="number" id="powerCapacity" value="${block.powerCapacity}"></label>
                     <label>Generation per Sec: <input type="number" id="generatorCapacityPerSec" value="${block.generatorCapacityPerSec}"></label>
                 `;
+            // Command attributes
             } else if (block.typeargs === 'Command') {
                 attributesHTML += `
                     <label>Faction ID: <input type="number" id="faction" value="${block.faction}"></label>
                 `;
+            // Thruster attributes
             } else if (block.typeargs === 'Thruster') {
                 attributesHTML += `
                     <label>Thruster Force: <input type="number" id="thrust" value="${block.thrust}"></label>
                 `;
+            // Shield attributes
             } else if (block.typeargs === 'Shield') {
                 attributesHTML += `
                     <label>Radius: <input type="number" id="radius" value="${block.shieldradius}"></label>
@@ -813,6 +828,7 @@
                     <label>Color: <input type="color" id="color" value="${block.shieldcolor}"></label>
                     <label>Damaged Color: <input type="color" id="damagedColor" value="${block.shielddamagedColor}"></label>
                 `;
+            // Tractor attributes
             } else if (block.typeargs === 'Tractor') {
                 attributesHTML += `
                     <label>Tractor Range: <input type="number" id="tractorRange" value="${block.tractorRange}"></label>
@@ -855,6 +871,7 @@
                 fragmentList.appendChild(addFragmentBtn);
             }
 
+            // Add/Save Block button
             attributesHTML += `<button onclick="saveBlock()">Add/Save Block</button>`;
             blockAttributesDiv.innerHTML += blockAttributesHTML;
             featureAttributesDiv.innerHTML += attributesHTML;
@@ -879,6 +896,7 @@
             updateBlockPreview();
         }
 
+        // Function to add shrouds to a block
         function addShroud() {
             let block = blocks.find(b => b.name === document.getElementById('name').value);
             if (!block) return;
@@ -915,6 +933,7 @@
             });
         }
 
+        // Function to add fragments to a block
         function addFragment() {
             let block = blocks.find(b => b.name === document.getElementById('name').value);
             if (!block || block.typeargs !== "Cannon") return;
@@ -947,6 +966,7 @@
             });
         }
 
+        // Function to remove fragments from a block
         function removeFragment(index) {
             const block = blocks.find(b => b.name === document.getElementById('name').value);
             if (block && block.fragments) {
@@ -971,6 +991,7 @@
             }
         }
 
+        // Function to remove shrouds from a block
         function removeShroud(index) {
             const block = blocks.find(b => b.name === document.getElementById('name').value);
             if (block) {
@@ -979,6 +1000,7 @@
             }
         }
 
+        // Function to save block attributes
         function saveBlock() {
             let block = {
                 typeargs: document.querySelector('h4') ? document.querySelector('h4').textContent.split(' ')[0] : '',
@@ -1081,6 +1103,7 @@
             updateBlockPreview();
         }
 
+        // Function to delete a block
         function deleteBlock(index) {
             if (confirm("Are you sure you want to delete this block?")) {
                 blocks.splice(index, 1);
@@ -1089,9 +1112,10 @@
             }
         }
 
+        // Function to clone a block
         function cloneBlock(index) {
-        const blockToClone = blocks[index];
-        const clonedBlock = { 
+            const blockToClone = blocks[index];
+            const clonedBlock = { 
             ...blockToClone, 
             id: blocks.length + 1, 
             name: `${blockToClone.name} (Clone)`,
@@ -1142,19 +1166,21 @@
         // Save blocks to local storage
         localStorage.setItem('blocks', JSON.stringify(blocks));
 
-    }
+        }
 
+        // Function to update the block list
         function updateBlockList() {
             const blockList = document.getElementById('blockList');
             const searchInput = document.getElementById('searchInput');
             const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
-            
+
             blockList.innerHTML = '';
             blockList.style.display = 'grid';
             blockList.style.gridTemplateColumns = 'repeat(2, 1fr)';
             blockList.style.gap = '8px';
             blockList.style.padding = '5px';
             
+            // Iterate through blocks and create a container for each button
             blocks.forEach((block, index) => {
                 if (searchTerm && !block.name.toLowerCase().includes(searchTerm) && 
                     !block.typeargs.toLowerCase().includes(searchTerm)) {
@@ -1210,840 +1236,848 @@
             });
         }
 
-    function hexToLuaColor(hex) {
-        return '0x' + hex.slice(1);
-    }
+        // Function to convert hex to Lua color
+        function hexToLuaColor(hex) {
+            return '0x' + hex.slice(1);
+        }
 
-    function exportBlocks() {
-        let luaCode = `{\n`;
-        blocks.forEach((block) => {
-            luaCode += `    {${block.id},\n`;
-            luaCode += `        group = ${block.group},\n`;
-            luaCode += `        name = "${block.name}",\n`;
-            luaCode += `        fillColor = ${hexToLuaColor(block.fillColor1)},\n`;
-            luaCode += `        fillColor1 = ${hexToLuaColor(block.fillColor2)},\n`;
-            luaCode += `        lineColor = ${hexToLuaColor(block.lineColor)},\n`;
-            luaCode += `        capacity = ${block.capacity},\n`;
-            luaCode += `        durability = ${block.health},\n`;
-            luaCode += `        density = ${block.density},\n`;
-            luaCode += `        shape = ${block.shape},\n`;
-            luaCode += `        scale = ${block.size},\n`;
-            luaCode += `        points = ${block.points},\n`;
-            if (block.typeargs === 'Cannon') {
-                if (block.turreted === 'True') {
-                    luaCode += `        features = PALETTE|CANNON|TURRET,\n`;
-                } else if (block.turreted === 'False') {
-                    luaCode += `        features = PALETTE|CANNON,\n`;
+        // Function to export blocks to blocks.lua
+        function exportBlocks() {
+            let luaCode = `{\n`;
+            blocks.forEach((block) => {
+                // Add block to lua code
+                luaCode += `    {${block.id},\n`;
+                luaCode += `        group = ${block.group},\n`;
+                luaCode += `        name = "${block.name}",\n`;
+
+                luaCode += `        fillColor = ${hexToLuaColor(block.fillColor1)},\n`;
+                luaCode += `        fillColor1 = ${hexToLuaColor(block.fillColor2)},\n`;
+                luaCode += `        lineColor = ${hexToLuaColor(block.lineColor)},\n`;
+                luaCode += `        capacity = ${block.capacity},\n`;
+                luaCode += `        durability = ${block.health},\n`;
+                luaCode += `        density = ${block.density},\n`;
+                luaCode += `        shape = ${block.shape},\n`;
+                luaCode += `        scale = ${block.size},\n`;
+                luaCode += `        points = ${block.points},\n`;
+                if (block.typeargs === 'Cannon') {
+                    if (block.turreted === 'True') {
+                        luaCode += `        features = PALETTE|CANNON|TURRET,\n`;
+                    } else if (block.turreted === 'False') {
+                        luaCode += `        features = PALETTE|CANNON,\n`;
+                    }
+                    luaCode += `        cannon = {\n`;
+                    luaCode += `            damage = ${block.cannondmg || 0},\n`;
+                    luaCode += `            roundsPerSec = ${block.cannonrounds || 0},\n`;
+                    luaCode += `            range = ${block.cannonrange || 0},\n`;
+                    luaCode += `            muzzleVel = ${block.cannonvel || 0},\n`;
+                    luaCode += `            power = ${block.cannonpower || 0},\n`;
+                    luaCode += `            spread = ${block.spread || 0},\n`;
+                    luaCode += `            projectileSize = ${block.projectileSize || 1},\n`;
+                    luaCode += `            roundsPerBurst = ${block.roundsPerBurst || 1},\n`;
+                    luaCode += `            burstyness = ${block.burstiness || 0}`;
+
+                    // Handle fragments with proper nesting
+                    if (block.fragments && block.fragments.length > 0) {
+                        let fragmentString = '';
+                        // Process fragments in reverse to create nested structure
+                        for (let i = block.fragments.length - 1; i >= 0; i--) {
+                            const fragment = block.fragments[i];
+                            if (i === block.fragments.length - 1) {
+                                // Last fragment (innermost)
+                                fragmentString = `,\n            fragment = {\n` +
+                                    `                spread = ${fragment.spread || 0},\n` +
+                                    `                range = ${fragment.range || 0},\n` +
+                                    `                damage = ${fragment.damage || 0},\n` +
+                                    `                muzzleVel = ${fragment.muzzleVel || 0},\n` +
+                                    `                projectileSize = ${fragment.projectileSize || 1},\n` +
+                                    `                roundsPerBurst = ${fragment.roundsPerBurst || 1}\n` +
+                                    `            }`;
+                            } else {
+                                // Wrap previous fragment string in new fragment
+                                fragmentString = `,\n            fragment = {\n` +
+                                    `                spread = ${fragment.spread || 0},\n` +
+                                    `                range = ${fragment.range || 0},\n` +
+                                    `                damage = ${fragment.damage || 0},\n` +
+                                    `                muzzleVel = ${fragment.muzzleVel || 0},\n` +
+                                    `                projectileSize = ${fragment.projectileSize || 1},\n` +
+                                    `                roundsPerBurst = ${fragment.roundsPerBurst || 1}` +
+                                    fragmentString + `\n            }`;
+                            }
+                        }
+                        luaCode += fragmentString;
+                    }
+                    luaCode += `\n        },\n`;
+                } else if (block.typeargs === 'Laser') {
+                    if (block.turreted === 'True') {
+                        luaCode += `        features = PALETTE|LASER|TURRET,\n`;
+                    } else if (block.turreted === 'False') {
+                        luaCode += `        features = PALETTE|LASER,\n`;
+                    }
+                    luaCode += `        laser = {\n`;
+                    luaCode += `            damage = ${block.laserdmg},\n`;
+                    luaCode += `            range = ${block.laserrange},\n`;
+                    luaCode += `            width = ${block.laserwidth},\n`;
+                    luaCode += `            power = ${block.laserpower},\n`;
+                    luaCode += `            color = ${hexToLuaColor(block.lasercolor)},\n`;
+                    luaCode += `        },\n`;
+                } else if (block.typeargs === 'Armor') {
+                    luaCode += `        features = PALETTE,\n`;
+                } else if (block.typeargs === 'Generator') {
+                    luaCode += `        features = PALETTE|GENERATOR,\n`;
+                    luaCode += `        powerCapacity = ${block.powerCapacity},\n`;
+                    luaCode += `        generatorCapacityPerSec = ${block.generatorCapacityPerSec},\n`;
+                } else if (block.typeargs === 'Command') {
+                    luaCode += `        features = COMMAND|ASSEMBLER|TRACTOR,\n`;
+                    luaCode += `        command = {\n`;
+                    luaCode += `            faction = ${block.faction},\n`;
+                    luaCode += `        tractorRange = 600,\n`;
+                    luaCode += `        },\n`;
+                } else if (block.typeargs === 'Thruster') {
+                    luaCode += `        features = PALETTE|THRUSTER,\n`;
+                    luaCode += `        thrusterForce = ${block.thrust},\n`;
+                } else if (block.typeargs === 'Factory') {
+                    luaCode += `        features = PALETTE|FACTORY,\n`;
+                } else if (block.typeargs === 'Shield') {
+                    luaCode += `        features = PALETTE|SHIELD,\n`;
+                    luaCode += `        shield = {\n`;
+                    luaCode += `            radius = ${block.shieldradius},\n`;
+                    luaCode += `            strenght = ${block.shieldhealth},\n`;
+                    luaCode += `            regen = ${block.shieldregen},\n`;
+                    luaCode += `            delay = ${block.shielddelay},\n`;
+                    luaCode += `            color = ${hexToLuaColor(block.shieldcolor)},\n`;
+                    luaCode += `            damagedColor = ${hexToLuaColor(block.shielddamagedColor)},\n`;
+                    luaCode += `        },\n`;
+                } else if (block.typeargs === 'Tractor') {
+                    luaCode += `        features = PALETTE|TRACTOR,\n`;
+                    luaCode += `        tractorRange = ${block.tractorRange},\n`;
                 }
-                luaCode += `        cannon = {\n`;
-                luaCode += `            damage = ${block.cannondmg || 0},\n`;
-                luaCode += `            roundsPerSec = ${block.cannonrounds || 0},\n`;
-                luaCode += `            range = ${block.cannonrange || 0},\n`;
-                luaCode += `            muzzleVel = ${block.cannonvel || 0},\n`;
-                luaCode += `            power = ${block.cannonpower || 0},\n`;
-                luaCode += `            spread = ${block.spread || 0},\n`;
-                luaCode += `            projectileSize = ${block.projectileSize || 1},\n`;
-                luaCode += `            roundsPerBurst = ${block.roundsPerBurst || 1},\n`;
-                luaCode += `            burstyness = ${block.burstiness || 0}`;
+                if (block.shrouds && block.shrouds.length > 0) {
+                    luaCode += `        shroud = {\n`;
+                    block.shrouds.forEach((shroud, index) => {
+                        luaCode += `            {size = ${shroud.size}, offset = ${shroud.offset}, taper = ${shroud.taper}, shape = ${shroud.shape}}`;
+                        if (index < block.shrouds.length - 1) {
+                            luaCode += `,`;
+                        }
+                        luaCode += `\n`;
+                    });
+                    luaCode += `        },\n`;
+                }
 
-                // Handle fragments with proper nesting
-                if (block.fragments && block.fragments.length > 0) {
-                    let fragmentString = '';
-                    // Process fragments in reverse to create nested structure
-                    for (let i = block.fragments.length - 1; i >= 0; i--) {
-                        const fragment = block.fragments[i];
-                        if (i === block.fragments.length - 1) {
-                            // Last fragment (innermost)
-                            fragmentString = `,\n            fragment = {\n` +
-                                `                spread = ${fragment.spread || 0},\n` +
-                                `                range = ${fragment.range || 0},\n` +
-                                `                damage = ${fragment.damage || 0},\n` +
-                                `                muzzleVel = ${fragment.muzzleVel || 0},\n` +
-                                `                projectileSize = ${fragment.projectileSize || 1},\n` +
-                                `                roundsPerBurst = ${fragment.roundsPerBurst || 1}\n` +
-                                `            }`;
-                        } else {
-                            // Wrap previous fragment string in new fragment
-                            fragmentString = `,\n            fragment = {\n` +
-                                `                spread = ${fragment.spread || 0},\n` +
-                                `                range = ${fragment.range || 0},\n` +
-                                `                damage = ${fragment.damage || 0},\n` +
-                                `                muzzleVel = ${fragment.muzzleVel || 0},\n` +
-                                `                projectileSize = ${fragment.projectileSize || 1},\n` +
-                                `                roundsPerBurst = ${fragment.roundsPerBurst || 1}` +
-                                fragmentString + `\n            }`;
+                luaCode += `    },\n`;
+            });
+            luaCode += `}`;
+
+            const blob = new Blob([luaCode], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'blocks.lua';
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function loadBlocks() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.lua';
+            input.onchange = async (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const text = await file.text();
+                    parseLuaBlocks(text);
+                }
+            };
+            input.click();
+        }
+
+        // Function to parse Lua blocks
+        function parseLuaBlocks(luaCode) {
+            const blockRegex = /{\s*(\d+),([\s\S]*?)\s*},/g;
+            let match;
+
+            blocks = []; // Clear existing blocks
+
+            while ((match = blockRegex.exec(luaCode)) !== null) {
+                let block = { 
+                    id: parseInt(match[1]), 
+                    typeargs: "", 
+                    turreted: "False", 
+                    shrouds: [], 
+                    fragments: [] 
+                };
+                let attributes = match[2];
+
+                attributes.split("\n").forEach(line => {
+                    let keyValue = line.match(/\s*(\w+)\s*=\s*(.*?),/);
+                    if (keyValue) {
+                        let key = keyValue[1].trim();
+                        let value = keyValue[2].trim().replace(/"|,/g, "");
+
+                        if (key === "name" || key === "shape") {
+                            block[key] = value;
+                        } else if (key === "features") {
+                            if (value.includes("CANNON")) block.typeargs = "Cannon";
+                            if (value.includes("LASER")) block.typeargs = "Laser";
+                            if (value.includes("TURRET")) block.turreted = "True";
+                            if (value.includes("GENERATOR")) block.typeargs = "Generator";
+                            if (value.includes("COMMAND")) block.typeargs = "Command";
+                            if (value.includes("THRUSTER")) block.typeargs = "Thruster";
+                            if (value.includes("FACTORY")) block.typeargs = "Factory";
+                            if (value.includes("SHIELD")) block.typeargs = "Shield";
+                            if (value.includes("TRACTOR")) block.typeargs = "Tractor";
+                        } else if (key === "cannon") {
+                            let cannonStats = value.match(/damage\s*=\s*(\d+).*?roundsPerSec\s*=\s*(\d+).*?range\s*=\s*(\d+).*?muzzleVel\s*=\s*(\d+).*?power\s*=\s*(\d+).*?spread\s*=\s*([\d.]+).*?projectileSize\s*=\s*(\d+).*?roundsPerBurst\s*=\s*(\d+).*?burstyness\s*=\s*([\d.]+)/s);
+                            if (cannonStats) {
+                                block.cannondmg = parseInt(cannonStats[1]);
+                                block.cannonrounds = parseInt(cannonStats[2]);
+                                block.cannonrange = parseInt(cannonStats[3]);
+                                block.cannonvel = parseInt(cannonStats[4]);
+                                block.cannonpower = parseInt(cannonStats[5]);
+                                block.spread = parseFloat(cannonStats[6]);
+                                block.projectileSize = parseInt(cannonStats[7]);
+                                block.roundsPerBurst = parseInt(cannonStats[8]);
+                                block.burstiness = parseFloat(cannonStats[9]);
+                            }
+                        } else if (key === "laser") {
+                            let laserStats = value.match(/damage\s*=\s*(\d+).*?range\s*=\s*(\d+).*?width\s*=\s*(\d+).*?power\s*=\s*(\d+).*?color\s*=\s*(0x\w+)/s);
+                            if (laserStats) {
+                                block.laserdmg = parseInt(laserStats[1]);
+                                block.laserrange = parseInt(laserStats[2]);
+                                block.laserwidth = parseInt(laserStats[3]);
+                                block.laserpower = parseInt(laserStats[4]);
+                                block.lasercolor = laserStats[5];
+                            }
+                        } else if (key === "shield") {
+                            let shieldStats = value.match(/radius\s*=\s*(\d+).*?strenght\s*=\s*(\d+).*?regen\s*=\s*(\d+).*?delay\s*=\s*(\d+).*?color\s*=\s*(0x\w+).*?damagedColor\s*=\s*(0x\w+)/s);
+                            if (shieldStats) {
+                                block.shieldradius = parseInt(shieldStats[1]);
+                                block.shieldhealth = parseInt(shieldStats[2]);
+                                block.shieldregen = parseInt(shieldStats[3]);
+                                block.shielddelay = parseInt(shieldStats[4]);
+                                block.shieldcolor = shieldStats[5];
+                                block.shielddamagedColor = shieldStats[6];
+                            }
+                        } else if (key === "shroud") {
+                            let shroudMatches = [...value.matchAll(/{size\s*=\s*(\d+),\s*offset\s*=\s*([^,]+),\s*taper\s*=\s*([\d.]+),\s*shape\s*=\s*(\w+)}/g)];
+                            block.shrouds = shroudMatches.map(shroud => ({
+                                size: parseInt(shroud[1]),
+                                offset: shroud[2],
+                                taper: parseFloat(shroud[3]),
+                                shape: shroud[4]
+                            }));
+                        } else if (key === "fragment") {
+                            let fragmentMatches = [...value.matchAll(/{spread\s*=\s*([\d.]+),\s*range\s*=\s*(\d+),\s*damage\s*=\s*(\d+),\s*muzzleVel\s*=\s*(\d+),\s*projectileSize\s*=\s*(\d+),\s*roundsPerBurst\s*=\s*(\d+)}/g)];
+                            block.fragments = fragmentMatches.map(fragment => ({
+                                spread: parseFloat(fragment[1]),
+                                range: parseInt(fragment[2]),
+                                damage: parseInt(fragment[3]),
+                                muzzleVel: parseInt(fragment[4]),
+                                projectileSize: parseInt(fragment[5]),
+                                roundsPerBurst: parseInt(fragment[6])
+                            }));
+                        } else if (!isNaN(value)) {
+                            block[key] = parseFloat(value);
                         }
                     }
-                    luaCode += fragmentString;
-                }
-                luaCode += `\n        },\n`;
-            } else if (block.typeargs === 'Laser') {
-                if (block.turreted === 'True') {
-                    luaCode += `        features = PALETTE|LASER|TURRET,\n`;
-                } else if (block.turreted === 'False') {
-                    luaCode += `        features = PALETTE|LASER,\n`;
-                }
-                luaCode += `        laser = {\n`;
-                luaCode += `            damage = ${block.laserdmg},\n`;
-                luaCode += `            range = ${block.laserrange},\n`;
-                luaCode += `            width = ${block.laserwidth},\n`;
-                luaCode += `            power = ${block.laserpower},\n`;
-                luaCode += `            color = ${hexToLuaColor(block.lasercolor)},\n`;
-                luaCode += `        },\n`;
-            } else if (block.typeargs === 'Armor') {
-                luaCode += `        features = PALETTE,\n`;
-            } else if (block.typeargs === 'Generator') {
-                luaCode += `        features = PALETTE|GENERATOR,\n`;
-                luaCode += `        powerCapacity = ${block.powerCapacity},\n`;
-                luaCode += `        generatorCapacityPerSec = ${block.generatorCapacityPerSec},\n`;
-            } else if (block.typeargs === 'Command') {
-                luaCode += `        features = COMMAND|ASSEMBLER|TRACTOR,\n`;
-                luaCode += `        command = {\n`;
-                luaCode += `            faction = ${block.faction},\n`;
-                luaCode += `        tractorRange = 600,\n`;
-                luaCode += `        },\n`;
-            } else if (block.typeargs === 'Thruster') {
-                luaCode += `        features = PALETTE|THRUSTER,\n`;
-                luaCode += `        thrusterForce = ${block.thrust},\n`;
-            } else if (block.typeargs === 'Factory') {
-                luaCode += `        features = PALETTE|FACTORY,\n`;
-            } else if (block.typeargs === 'Shield') {
-                luaCode += `        features = PALETTE|SHIELD,\n`;
-                luaCode += `        shield = {\n`;
-                luaCode += `            radius = ${block.shieldradius},\n`;
-                luaCode += `            strenght = ${block.shieldhealth},\n`;
-                luaCode += `            regen = ${block.shieldregen},\n`;
-                luaCode += `            delay = ${block.shielddelay},\n`;
-                luaCode += `            color = ${hexToLuaColor(block.shieldcolor)},\n`;
-                luaCode += `            damagedColor = ${hexToLuaColor(block.shielddamagedColor)},\n`;
-                luaCode += `        },\n`;
-            } else if (block.typeargs === 'Tractor') {
-                luaCode += `        features = PALETTE|TRACTOR,\n`;
-                luaCode += `        tractorRange = ${block.tractorRange},\n`;
-            }
-            if (block.shrouds && block.shrouds.length > 0) {
-                luaCode += `        shroud = {\n`;
-                block.shrouds.forEach((shroud, index) => {
-                    luaCode += `            {size = ${shroud.size}, offset = ${shroud.offset}, taper = ${shroud.taper}, shape = ${shroud.shape}}`;
-                    if (index < block.shrouds.length - 1) {
-                        luaCode += `,`;
-                    }
-                    luaCode += `\n`;
                 });
-                luaCode += `        },\n`;
+
+                blocks.push(block);
             }
 
-            luaCode += `    },\n`;
-        });
-        luaCode += `}`;
-
-        const blob = new Blob([luaCode], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'blocks.lua';
-        document.body.appendChild(a);
-        a.click();
-
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    function loadBlocks() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.lua';
-    input.onchange = async (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const text = await file.text();
-            parseLuaBlocks(text);
-        }
-    };
-    input.click();
-}
-
-function parseLuaBlocks(luaCode) {
-    const blockRegex = /{\s*(\d+),([\s\S]*?)\s*},/g;
-    let match;
-
-    blocks = []; // Clear existing blocks
-
-    while ((match = blockRegex.exec(luaCode)) !== null) {
-        let block = { 
-            id: parseInt(match[1]), 
-            typeargs: "", 
-            turreted: "False", 
-            shrouds: [], 
-            fragments: [] 
-        };
-        let attributes = match[2];
-
-        attributes.split("\n").forEach(line => {
-            let keyValue = line.match(/\s*(\w+)\s*=\s*(.*?),/);
-            if (keyValue) {
-                let key = keyValue[1].trim();
-                let value = keyValue[2].trim().replace(/"|,/g, "");
-
-                if (key === "name" || key === "shape") {
-                    block[key] = value;
-                } else if (key === "features") {
-                    if (value.includes("CANNON")) block.typeargs = "Cannon";
-                    if (value.includes("LASER")) block.typeargs = "Laser";
-                    if (value.includes("TURRET")) block.turreted = "True";
-                    if (value.includes("GENERATOR")) block.typeargs = "Generator";
-                    if (value.includes("COMMAND")) block.typeargs = "Command";
-                    if (value.includes("THRUSTER")) block.typeargs = "Thruster";
-                    if (value.includes("FACTORY")) block.typeargs = "Factory";
-                    if (value.includes("SHIELD")) block.typeargs = "Shield";
-                    if (value.includes("TRACTOR")) block.typeargs = "Tractor";
-                } else if (key === "cannon") {
-                    let cannonStats = value.match(/damage\s*=\s*(\d+).*?roundsPerSec\s*=\s*(\d+).*?range\s*=\s*(\d+).*?muzzleVel\s*=\s*(\d+).*?power\s*=\s*(\d+).*?spread\s*=\s*([\d.]+).*?projectileSize\s*=\s*(\d+).*?roundsPerBurst\s*=\s*(\d+).*?burstyness\s*=\s*([\d.]+)/s);
-                    if (cannonStats) {
-                        block.cannondmg = parseInt(cannonStats[1]);
-                        block.cannonrounds = parseInt(cannonStats[2]);
-                        block.cannonrange = parseInt(cannonStats[3]);
-                        block.cannonvel = parseInt(cannonStats[4]);
-                        block.cannonpower = parseInt(cannonStats[5]);
-                        block.spread = parseFloat(cannonStats[6]);
-                        block.projectileSize = parseInt(cannonStats[7]);
-                        block.roundsPerBurst = parseInt(cannonStats[8]);
-                        block.burstiness = parseFloat(cannonStats[9]);
-                    }
-                } else if (key === "laser") {
-                    let laserStats = value.match(/damage\s*=\s*(\d+).*?range\s*=\s*(\d+).*?width\s*=\s*(\d+).*?power\s*=\s*(\d+).*?color\s*=\s*(0x\w+)/s);
-                    if (laserStats) {
-                        block.laserdmg = parseInt(laserStats[1]);
-                        block.laserrange = parseInt(laserStats[2]);
-                        block.laserwidth = parseInt(laserStats[3]);
-                        block.laserpower = parseInt(laserStats[4]);
-                        block.lasercolor = laserStats[5];
-                    }
-                } else if (key === "shield") {
-                    let shieldStats = value.match(/radius\s*=\s*(\d+).*?strenght\s*=\s*(\d+).*?regen\s*=\s*(\d+).*?delay\s*=\s*(\d+).*?color\s*=\s*(0x\w+).*?damagedColor\s*=\s*(0x\w+)/s);
-                    if (shieldStats) {
-                        block.shieldradius = parseInt(shieldStats[1]);
-                        block.shieldhealth = parseInt(shieldStats[2]);
-                        block.shieldregen = parseInt(shieldStats[3]);
-                        block.shielddelay = parseInt(shieldStats[4]);
-                        block.shieldcolor = shieldStats[5];
-                        block.shielddamagedColor = shieldStats[6];
-                    }
-                } else if (key === "shroud") {
-                    let shroudMatches = [...value.matchAll(/{size\s*=\s*(\d+),\s*offset\s*=\s*([^,]+),\s*taper\s*=\s*([\d.]+),\s*shape\s*=\s*(\w+)}/g)];
-                    block.shrouds = shroudMatches.map(shroud => ({
-                        size: parseInt(shroud[1]),
-                        offset: shroud[2],
-                        taper: parseFloat(shroud[3]),
-                        shape: shroud[4]
-                    }));
-                } else if (key === "fragment") {
-                    let fragmentMatches = [...value.matchAll(/{spread\s*=\s*([\d.]+),\s*range\s*=\s*(\d+),\s*damage\s*=\s*(\d+),\s*muzzleVel\s*=\s*(\d+),\s*projectileSize\s*=\s*(\d+),\s*roundsPerBurst\s*=\s*(\d+)}/g)];
-                    block.fragments = fragmentMatches.map(fragment => ({
-                        spread: parseFloat(fragment[1]),
-                        range: parseInt(fragment[2]),
-                        damage: parseInt(fragment[3]),
-                        muzzleVel: parseInt(fragment[4]),
-                        projectileSize: parseInt(fragment[5]),
-                        roundsPerBurst: parseInt(fragment[6])
-                    }));
-                } else if (!isNaN(value)) {
-                    block[key] = parseFloat(value);
-                }
-            }
-        });
-
-        blocks.push(block);
-    }
-
-    updateBlockList();
-}
-
-function clearSavedBlocks() {
-    if (confirm("Are you sure you want to delete all saved block data?")) {
-        // Clear blocks from local storage
-        localStorage.removeItem('blocks');
-        
-        // Clear the blocks array and update the UI
-        blocks = [];
-        updateBlockList();
-    }
-}
-
-function saveProject() {
-    const projectName = document.getElementById('projectName').value.trim();
-    if (!projectName) {
-        alert("Please enter a project name.");
-        return;
-    }
-
-    // Save the current blocks under the project name
-    localStorage.setItem(`project_${projectName}`, JSON.stringify(blocks));
-
-    // Update the project list
-    updateProjectList();
-    alert(`Project "${projectName}" saved successfully.`);
-}
-
-function loadProject() {
-    const projectName = document.getElementById('projectName').value.trim();
-    if (!projectName) {
-        alert("Please enter a project name.");
-        return;
-    }
-
-    const savedBlocks = localStorage.getItem(`project_${projectName}`);
-    if (savedBlocks) {
-        blocks = JSON.parse(savedBlocks);
-        updateBlockList();
-        alert(`Project "${projectName}" loaded successfully.`);
-    } else {
-        alert(`No project found with the name "${projectName}".`);
-    }
-}
-
-function loadSelectedProject() {
-    const projectName = document.getElementById('projectList').value;
-    if (projectName) {
-        const savedBlocks = localStorage.getItem(`project_${projectName}`);
-        if (savedBlocks) {
-            blocks = JSON.parse(savedBlocks);
             updateBlockList();
-            alert(`Project "${projectName}" loaded successfully.`);
         }
-    }
-}
 
-function deleteProject() {
-    const projectName = document.getElementById('projectList').value;
-    if (!projectName) {
-        alert("Please select a project to delete.");
-        return;
-    }
-
-    if (confirm(`Are you sure you want to delete the project "${projectName}"?`)) {
-        localStorage.removeItem(`project_${projectName}`);
-        updateProjectList();
-        alert(`Project "${projectName}" deleted successfully.`);
-    }
-}
-
-function updateProjectList() {
-    const projectList = document.getElementById('projectList');
-    projectList.innerHTML = '<option value="">Select a project</option>';
-
-    // Iterate over localStorage keys to find projects
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith('project_')) {
-            const projectName = key.replace('project_', '');
-            const option = document.createElement('option');
-            option.value = projectName;
-            option.textContent = projectName;
-            projectList.appendChild(option);
-        }
-    }
-}
-
-// Initialize project list on page load
-document.addEventListener('DOMContentLoaded', () => {
-    updateProjectList();
-    initializeDropZones();
-});
-
-function updateProjectList() {
-    const projectList = document.getElementById('projectList');
-    projectList.innerHTML = '<option value="">Select a project</option>';
-
-    // Iterate over localStorage keys to find projects
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith('project_')) {
-            const projectName = key.replace('project_', '');
-            const option = document.createElement('option');
-            option.value = projectName;
-            option.textContent = projectName;
-            projectList.appendChild(option);
-        }
-    }
-}
-
-let autosaveInterval;
-let autosaveEnabled = false;
-
-function toggleAutosave() {
-    autosaveEnabled = document.getElementById('autosaveToggle').checked;
-    if (autosaveEnabled) {
-        startAutosave();
-    } else {
-        stopAutosave();
-    }
-}
-
-function startAutosave() {
-    const projectName = document.getElementById('projectName').value.trim();
-    if (!projectName) {
-        alert("Please enter a project name to enable autosave.");
-        document.getElementById('autosaveToggle').checked = false;
-        return;
-    }
-
-    autosaveInterval = setInterval(() => {
-        saveProject();
-        console.log(`Project "${projectName}" autosaved.`);
-    }, 240000); // Autosave every 2 minutes
-}
-
-function stopAutosave() {
-    clearInterval(autosaveInterval);
-}
-
-function showTutorial() {
-    document.getElementById('tutorialModal').style.display = 'block';
-    document.getElementById('tutorialOverlay').style.display = 'block';
-    
-    // Apply dark mode if active
-    if (document.body.classList.contains('dark-mode')) {
-        document.getElementById('tutorialModal').classList.add('dark-mode');
-    }
-}
-
-function closeTutorial() {
-    document.getElementById('tutorialModal').style.display = 'none';
-    document.getElementById('tutorialOverlay').style.display = 'none';
-}
-
-// Close tutorial when clicking overlay
-document.getElementById('tutorialOverlay').addEventListener('click', closeTutorial);
-
-function showComparison() {
-    const comparisonPanel = document.getElementById('comparisonPanel');
-    const typeSelectionPanel = document.querySelector('.block-list:not(:last-child)');
-    const attributesPanel = document.querySelector('.panel:not(.block-list)');
-    const blockAttributesDiv = document.getElementById('blockattributes');
-    
-    // Toggle comparison mode
-    if (comparisonPanel.style.display === 'block') {
-        // Switch back to normal mode
-        comparisonPanel.style.display = 'none';
-        typeSelectionPanel.style.display = 'block';
-        attributesPanel.style.display = 'block';
-        
-        // Clear comparison selections
-        document.getElementById('block1Select').value = '';
-        document.getElementById('block2Select').value = '';
-        
-        // Reset block attributes to default
-        const defaultBlock = {
-            typeargs: '',
-            generalargs: '',
-            name: '',
-            shape: 'SQUARE',
-            size: 1,
-            id: blocks.length + 1,
-            group: 1,
-            fillColor1: "#d4d4d4",
-            fillColor2: "#959696",
-            lineColor: "#686869",
-            capacity: 0,
-            health: 1,
-            points: 0,
-            density: 1
-        };
-        
-        // Reset the preview and attributes panels
-        if (blockAttributesDiv) {
-            blockAttributesDiv.innerHTML = '<h5>General Attributes</h5>';
-        }
-        
-        // Clear any existing attributes
-        const attributesDiv = document.getElementById('attributes');
-        if (attributesDiv) {
-            attributesDiv.innerHTML = '<h4>Select a Block Type</h4>';
-        }
-        
-        // Properly reset block preview
-        const previewDiv = document.getElementById('blockPreview');
-        if (previewDiv) {
-            previewDiv.style.display = 'block';
-            previewDiv.innerHTML = '';
-            // Reset all preview-related variables and call updateBlockPreview with default state
-            document.querySelector('h4').textContent = 'Select a Block Type';
-            document.querySelector('h5').textContent = 'General Attributes';
-            updateBlockPreview();
-        }
-        
-        // Show all panels that should be visible in create mode
-        document.getElementById('blockattributes').style.display = 'block';
-        document.getElementById('attributes').style.display = 'block';
-        
-        // Force a clean state for the preview
-        setTimeout(() => {
-            if (previewDiv) {
-                updateBlockPreview();
+        // Function to clear the saved blocks
+        function clearSavedBlocks() {
+            if (confirm("Are you sure you want to delete all saved block data?")) {
+                // Clear blocks from local storage
+                localStorage.removeItem('blocks');
+                
+                // Clear the blocks array and update the UI
+                blocks = [];
+                updateBlockList();
             }
-        }, 0);
-        
-    } else {
-        // Check if there are at least 2 blocks to compare
-        if (blocks.length < 2) {
-            alert('You need at least 2 blocks to use the comparison tool.');
+        }
+
+        // Function to save the current project
+        function saveProject() {
+            const projectName = document.getElementById('projectName').value.trim();
+            if (!projectName) {
+                alert("Please enter a project name.");
+                return;
+            }
+
+            // Save the current blocks under the project name
+            localStorage.setItem(`project_${projectName}`, JSON.stringify(blocks));
+
+            // Update the project list
+            updateProjectList();
+            alert(`Project "${projectName}" saved successfully.`);
+        }
+
+        // Function to load a project
+        function loadProject() {
+            const projectName = document.getElementById('projectName').value.trim();
+            if (!projectName) {
+
+            alert("Please enter a project name.");
             return;
         }
 
-        // Switch to comparison mode
-        comparisonPanel.style.display = 'block';
-        typeSelectionPanel.style.display = 'none';
-        attributesPanel.style.display = 'none';
-        
-        // Move comparison panel to the correct position
-        const container = document.querySelector('.container');
-        container.insertBefore(comparisonPanel, document.querySelector('.block-list:last-child'));
-        
-        // Populate select boxes with only existing blocks, no "Select Block" option
-        const select1 = document.getElementById('block1Select');
-        const select2 = document.getElementById('block2Select');
-        select1.innerHTML = '';
-        select2.innerHTML = '';
-        
-        blocks.forEach(block => {
-            const option1 = document.createElement('option');
-            const option2 = document.createElement('option');
-            option1.value = option2.value = block.id;
-            option1.textContent = option2.textContent = `${block.name} (${block.typeargs})`;
-            select1.appendChild(option1);
-            select2.appendChild(option2.cloneNode(true));
-        });
-
-        // Select first block by default for each dropdown
-        if (blocks.length > 0) {
-            select1.value = blocks[0].id;
-            select2.value = blocks.length > 1 ? blocks[1].id : blocks[0].id;
-            updateComparison();
-        }
-        
-        // Initialize drop zones when comparison panel is shown
-        initializeDropZones();
-    }
-}
-
-function updateComparison() {
-    const block1Id = document.getElementById('block1Select').value;
-    const block2Id = document.getElementById('block2Select').value;
-    
-    if (!block1Id || !block2Id) return;
-    
-    const block1 = blocks.find(b => b.id == block1Id);
-    const block2 = blocks.find(b => b.id == block2Id);
-    
-    // Update previews
-    const preview1 = document.getElementById('preview1');
-    const preview2 = document.getElementById('preview2');
-    
-    // Create temporary elements to use existing preview function
-    const tempPreviewDiv = document.createElement('div');
-    tempPreviewDiv.id = 'blockPreview';
-    
-    // Save original preview div if it exists
-    const originalPreviewDiv = document.getElementById('blockPreview');
-    const originalParent = originalPreviewDiv ? originalPreviewDiv.parentNode : null;
-    const originalNextSibling = originalPreviewDiv ? originalPreviewDiv.nextSibling : null;
-    
-    // Temporarily disable normal block selection
-    const originalSelectBlock = window.selectBlock;
-    window.selectBlock = () => {};
-    
-    // Preview block 1
-    if (originalPreviewDiv) {
-        originalPreviewDiv.replaceWith(tempPreviewDiv);
-    }
-    renderAttributes(block1);
-    preview1.innerHTML = document.getElementById('blockPreview').innerHTML;
-    
-    // Preview block 2
-    renderAttributes(block2);
-    preview2.innerHTML = document.getElementById('blockPreview').innerHTML;
-    
-    // Restore original preview div and selectBlock function
-    if (originalParent) {
-        tempPreviewDiv.replaceWith(originalPreviewDiv);
-    }
-    window.selectBlock = originalSelectBlock;
-    
-    // Compare and display differences
-    const comparisonDetails = document.querySelector('.comparison-details');
-    comparisonDetails.innerHTML = generateComparisonTable(block1, block2);
-    
-    // Ensure comparison panel stays visible
-    document.getElementById('comparisonPanel').style.display = 'block';
-    
-    // Keep type selection and attributes panels hidden
-    document.querySelector('.block-list:not(:last-child)').style.display = 'none';
-    document.querySelector('.panel:not(.block-list):not(.comparison-panel)').style.display = 'none';
-    generatecomparisonConclusion();
-}
-
-function calculateDPS(block) {
-    if (block.typeargs === 'Cannon') {
-        const damage = parseFloat(block.cannondmg) || 0;
-        const roundsPerSec = parseFloat(block.cannonrounds) || 0;
-        const roundsPerBurst = parseFloat(block.roundsPerBurst) || 1;
-        
-        // Calculate fragments DPS if they exist
-        let fragmentDPS = 0;
-        if (block.fragments && block.fragments.length > 0) {
-            block.fragments.forEach(fragment => {
-                const fragmentDamage = parseFloat(fragment.damage) || 0;
-                const fragmentRounds = parseFloat(fragment.roundsPerBurst) || 1;
-                fragmentDPS += fragmentDamage * fragmentRounds;
-            });
-            // Fragment DPS is per shot, so multiply by rounds per second
-            fragmentDPS *= roundsPerSec;
-        }
-        
-        // Base DPS + Fragment DPS
-        return (damage * roundsPerSec * roundsPerBurst) + fragmentDPS;
-    } 
-    else if (block.typeargs === 'Laser') {
-        const damage = parseFloat(block.laserdmg) || 0;
-        // Lasers do continuous damage, so DPS is just the damage value
-        return damage;
-    }
-    return 0;
-}
-
-function generateComparisonTable(block1, block2) {
-    const commonProperties = [
-        { key: 'name', label: 'Name' },
-        { key: 'typeargs', label: 'Type' },
-        { key: 'size', label: 'Size' },
-        { key: 'shape', label: 'Shape' },
-        { key: 'points', label: 'Points' },
-        { key: 'health', label: 'Durability' },
-        { key: 'capacity', label: 'Capacity' }
-    ];
-    
-    // Add type-specific properties
-    if (block1.typeargs === 'Cannon' || block2.typeargs === 'Cannon') {
-        commonProperties.push(
-            { key: 'cannondmg', label: 'Damage per Shot' },
-            { key: 'cannonrounds', label: 'Rounds/s' },
-            { key: 'cannonrange', label: 'Range' },
-            { key: 'cannonvel', label: 'Velocity' },
-            { key: 'cannonpower', label: 'Power' },
-            { key: 'roundsPerBurst', label: 'Rounds per Burst' },
-            { key: 'burstiness', label: 'Burstyness' },
-            { key: 'projectileSize', label: 'Projectile Size' },
-            { key: 'spread', label: 'Spread' },
-            { 
-                key: 'dps', 
-                label: 'DPS', 
-                calculate: (block) => calculateDPS(block).toFixed(2)
-            }
-        );
-    }
-    if (block1.typeargs === 'Laser' || block2.typeargs === 'Laser') {
-        commonProperties.push(
-            { key: 'laserdmg', label: 'DPS' },
-            { key: 'laserrange', label: 'Range' },
-            { key: 'laserwidth', label: 'Width' },
-            { key: 'laserpower', label: 'Power' },
-            { key: 'lasercolor', label: 'Color' }
-        );
-    }
-
-
-    if (block1.typeargs === 'Generator' || block2.typeargs === 'Generator') {
-        commonProperties.push(
-            { key: 'powerCapacity', label: 'Power Capacity' },
-            { key: 'generatorCapacityPerSec', label: 'Generation per Sec' }
-        );
-    }
-
-    if (block1.typeargs === 'Command' || block2.typeargs === 'Command') {
-        commonProperties.push(
-            { key: 'faction', label: 'Faction' }
-        );
-    }
-
-    if (block1.typeargs === 'Thruster' || block2.typeargs === 'Thruster') {
-        commonProperties.push(
-            { key: 'thrust', label: 'Thrust' },
-        );
-    }
-
-    if (block1.typeargs === 'Shield' || block2.typeargs === 'Shield') {
-        commonProperties.push(
-            { key: 'shieldradius', label: 'Radius' },
-            { key: 'shieldpower', label: 'Power' },
-            { key: 'shieldhealth', label: 'Health' },
-            { key: 'shieldregen', label: 'Regen/s' }
-        );
-    }
-
-    if (block1.typeargs === 'Tractor' || block2.typeargs === 'Tractor') {
-        commonProperties.push(
-            { key: 'tractorRange', label: 'TractorRange' }
-        );
-    }
-
-    let html = `
-        <table class="comparison-table">
-
-
-            <tr>
-                <th>Property</th>
-                <th>${block1.name}</th>
-                <th>${block2.name}</th>
-                <th>Difference</th>
-            </tr>
-    `;
-    
-    commonProperties.forEach(prop => {
-        let val1, val2;
-        if (prop.calculate) {
-            val1 = prop.calculate(block1);
-            val2 = prop.calculate(block2);
-        } else {
-            val1 = block1[prop.key];
-            val2 = block2[prop.key];
-        }
-        
-        const isDifferent = val1 !== val2;
-        let difference = '';
-        
-        // Calculate difference for numeric values
-        if (!isNaN(val1) && !isNaN(val2)) {
-            difference = (val2 - val1).toFixed(2);
-            // Add percentage difference for DPS
-            if (prop.key === 'dps' || (prop.key === 'laserdmg' && (block1.typeargs === 'Laser' || block2.typeargs === 'Laser'))) {
-                const percentDiff = ((val2 - val1) / val1 * 100).toFixed(1);
-                difference += ` (${percentDiff}%)`;
+            // Load the saved blocks
+            const savedBlocks = localStorage.getItem(`project_${projectName}`);
+            if (savedBlocks) {
+                blocks = JSON.parse(savedBlocks);
+                updateBlockList();
+                alert(`Project "${projectName}" loaded successfully.`);
+            } else {
+                alert(`No project found with the name "${projectName}".`);
             }
         }
-        
-        // Add color coding for DPS comparison
-        let rowClass = isDifferent ? 'different' : '';
-        if ((prop.key === 'dps' || (prop.key === 'laserdmg' && (block1.typeargs === 'Laser' || block2.typeargs === 'Laser'))) && isDifferent) {
-            rowClass += val2 > val1 ? ' higher-dps' : ' lower-dps';
-        }
-        
-        html += `
-            <tr class="${rowClass}">
-                <td>${prop.label}</td>
-                <td>${val1 || '-'}</td>
-                <td>${val2 || '-'}</td>
-                <td>${difference}</td>
-            </tr>
-        `;
-    });
-    
-    html += '</table>';
-    return html;
-}
 
-function initializeDropZones() {
-    const dropZones = ['dropZone1', 'dropZone2'];
-    const selects = ['block1Select', 'block2Select'];
-    
-    dropZones.forEach((zoneId, index) => {
-        const zone = document.getElementById(zoneId);
-        const select = document.getElementById(selects[index]);
-        
-        zone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            zone.classList.add('drag-over');
+        // Function to load the selected project
+        function loadSelectedProject() {
+            const projectName = document.getElementById('projectList').value;
+            if (projectName) {
+                const savedBlocks = localStorage.getItem(`project_${projectName}`);
+                if (savedBlocks) {
+                    blocks = JSON.parse(savedBlocks);
+                    updateBlockList();
+                    alert(`Project "${projectName}" loaded successfully.`);
+                }
+            }
+        }
+
+        // Function to delete a project
+        function deleteProject() {
+            const projectName = document.getElementById('projectList').value;
+            if (!projectName) {
+                alert("Please select a project to delete.");
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete the project "${projectName}"?`)) {
+                localStorage.removeItem(`project_${projectName}`);
+                updateProjectList();
+                alert(`Project "${projectName}" deleted successfully.`);
+            }
+        }
+
+        // Function to update the project list
+        function updateProjectList() {
+            const projectList = document.getElementById('projectList');
+            projectList.innerHTML = '<option value="">Select a project</option>';
+                        // Iterate over localStorage keys to find projects
+                        for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('project_')) {
+                    const projectName = key.replace('project_', '');
+                    const option = document.createElement('option');
+                    option.value = projectName;
+                    option.textContent = projectName;
+                    projectList.appendChild(option);
+                }
+            }
+        }
+
+        // Initialize project list on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProjectList();
+            initializeDropZones();
         });
-        
-        zone.addEventListener('dragleave', () => {
-            zone.classList.remove('drag-over');
-        });
-        
-        zone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            zone.classList.remove('drag-over');
+
+        let autosaveInterval;
+        let autosaveEnabled = false;
+
+        // Function to toggle the autosave feature
+        function toggleAutosave() {
+            autosaveEnabled = document.getElementById('autosaveToggle').checked;
+            if (autosaveEnabled) {
+                startAutosave();
+            } else {
+                stopAutosave();
+            }
+        }
+
+        // Function to start the autosave feature
+        function startAutosave() {
+            const projectName = document.getElementById('projectName').value.trim();
+            if (!projectName) {
+                alert("Please enter a project name to enable autosave.");
+
+                document.getElementById('autosaveToggle').checked = false;
+                return;
+            }
+
+            autosaveInterval = setInterval(() => {
+                saveProject();
+                console.log(`Project "${projectName}" autosaved.`);
+            }, 240000); // Autosave every 2 minutes
+        }
+
+        // Function to stop the autosave feature
+        function stopAutosave() {
+            clearInterval(autosaveInterval);
+        }
+
+        // Function to show the tutorial
+        function showTutorial() {
+            document.getElementById('tutorialModal').style.display = 'block';
+            document.getElementById('tutorialOverlay').style.display = 'block';
             
-            const blockId = e.dataTransfer.getData('text/plain');
-            select.value = blockId;
-            updateComparison();
-        });
-    });
-}
+            // Apply dark mode if active
+            if (document.body.classList.contains('dark-mode')) {
+                document.getElementById('tutorialModal').classList.add('dark-mode');
+            }
+        }
 
-function fullScreen() {
-    document.documentElement.requestFullscreen();
-}
+        // Function to close the tutorial
+        function closeTutorial() {
+            document.getElementById('tutorialModal').style.display = 'none';
+            document.getElementById('tutorialOverlay').style.display = 'none';
+        }
 
-function showBlockStatistics(blockId) {
-    const block = blocks.find(b => b.id == blockId);
+        // Close tutorial when clicking overlay
+        document.getElementById('tutorialOverlay').addEventListener('click', closeTutorial);
 
-    if (!block) return;
+        // Function to show the comparison panel
+        function showComparison() {
+            const comparisonPanel = document.getElementById('comparisonPanel');
+            const typeSelectionPanel = document.querySelector('.block-list:not(:last-child)');
+            const attributesPanel = document.querySelector('.panel:not(.block-list)');
+            const blockAttributesDiv = document.getElementById('blockattributes');
+            
+            // Toggle comparison mode
+            if (comparisonPanel.style.display === 'block') {
+                // Switch back to normal mode
+                comparisonPanel.style.display = 'none';
+                typeSelectionPanel.style.display = 'block';
+                attributesPanel.style.display = 'block';
+                
+                // Clear comparison selections
+                document.getElementById('block1Select').value = '';
+                document.getElementById('block2Select').value = '';
+                
+                // Reset block attributes to default
+                const defaultBlock = {
+                    typeargs: '',
+                    generalargs: '',
+                    name: '',
+                    shape: 'SQUARE',
+                    size: 1,
+                    id: blocks.length + 1,
+                    group: 1,
+                    fillColor1: "#d4d4d4",
+                    fillColor2: "#959696",
+                    lineColor: "#686869",
+                    capacity: 0,
+                    health: 1,
+                    points: 0,
+                    density: 1
+                };
+                
+                // Reset the preview and attributes panels
+                if (blockAttributesDiv) {
+                    blockAttributesDiv.innerHTML = '<h5>General Attributes</h5>';
+                }
+                
+                // Clear any existing attributes
+                const attributesDiv = document.getElementById('attributes');
+                if (attributesDiv) {
+                    attributesDiv.innerHTML = '<h4>Select a Block Type</h4>';
+                }
+                
+                // Properly reset block preview
+                const previewDiv = document.getElementById('blockPreview');
+                if (previewDiv) {
+                    previewDiv.style.display = 'block';
+                    previewDiv.innerHTML = '';
+                    // Reset all preview-related variables and call updateBlockPreview with default state
+                    document.querySelector('h4').textContent = 'Select a Block Type';
+                    document.querySelector('h5').textContent = 'General Attributes';
+                    updateBlockPreview();
+                }
+                
+                // Show all panels that should be visible in create mode
+                document.getElementById('blockattributes').style.display = 'block';
+                document.getElementById('attributes').style.display = 'block';
+                
+                // Force a clean state for the preview
+                setTimeout(() => {
+                    if (previewDiv) {
+                        updateBlockPreview();
+                    }
+                }, 0);
+                
+            } else {
+                // Check if there are at least 2 blocks to compare
+                if (blocks.length < 2) {
+                    alert('You need at least 2 blocks to use the comparison tool.');
+                    return;
+                }
 
-    const panelList = document.querySelectorAll('.panel');
-    panelList.forEach(panel => {
-        panel.style.display = 'none';
-    });
+                // Switch to comparison mode
+                comparisonPanel.style.display = 'block';
+                typeSelectionPanel.style.display = 'none';
+                attributesPanel.style.display = 'none';
+                
+                // Move comparison panel to the correct position
+                const container = document.querySelector('.container');
+                container.insertBefore(comparisonPanel, document.querySelector('.block-list:last-child'));
+                
+                // Populate select boxes with only existing blocks, no "Select Block" option
+                const select1 = document.getElementById('block1Select');
+                const select2 = document.getElementById('block2Select');
+                select1.innerHTML = '';
+                select2.innerHTML = '';
+                
+                blocks.forEach(block => {
+                    const option1 = document.createElement('option');
+                    const option2 = document.createElement('option');
+                    option1.value = option2.value = block.id;
+                    option1.textContent = option2.textContent = `${block.name} (${block.typeargs})`;
+                    select1.appendChild(option1);
+                    select2.appendChild(option2.cloneNode(true));
+                });
 
-    const blockStatisticsPanel = document.getElementById('blockStatisticsPanel');
-    blockStatisticsPanel.style.display = 'block';
+                // Select first block by default for each dropdown
+                if (blocks.length > 0) {
+                    select1.value = blocks[0].id;
+                    select2.value = blocks.length > 1 ? blocks[1].id : blocks[0].id;
+                    updateComparison();
+                }
+                
+                // Initialize drop zones when comparison panel is shown
+                initializeDropZones();
+            }
+        }
+
+        // Function to update the comparison
+        function updateComparison() {
+            const block1Id = document.getElementById('block1Select').value;
+            const block2Id = document.getElementById('block2Select').value;
+            
+            if (!block1Id || !block2Id) return;
+            
+            const block1 = blocks.find(b => b.id == block1Id);
+            const block2 = blocks.find(b => b.id == block2Id);
+            
+            // Update previews
+            const preview1 = document.getElementById('preview1');
+            const preview2 = document.getElementById('preview2');
+            
+            // Create temporary elements to use existing preview function
+            const tempPreviewDiv = document.createElement('div');
+            tempPreviewDiv.id = 'blockPreview';
+            
+            // Save original preview div if it exists
+            const originalPreviewDiv = document.getElementById('blockPreview');
+            const originalParent = originalPreviewDiv ? originalPreviewDiv.parentNode : null;
+            const originalNextSibling = originalPreviewDiv ? originalPreviewDiv.nextSibling : null;
+            
+            // Temporarily disable normal block selection
+            const originalSelectBlock = window.selectBlock;
+            window.selectBlock = () => {};
+            
+            // Preview block 1
+            if (originalPreviewDiv) {
+                originalPreviewDiv.replaceWith(tempPreviewDiv);
+            }
+            renderAttributes(block1);
+            preview1.innerHTML = document.getElementById('blockPreview').innerHTML;
+            
+            // Preview block 2
+            renderAttributes(block2);
+            preview2.innerHTML = document.getElementById('blockPreview').innerHTML;
+            
+            // Restore original preview div and selectBlock function
+            if (originalParent) {
+                tempPreviewDiv.replaceWith(originalPreviewDiv);
+            }
+            window.selectBlock = originalSelectBlock;
+            
+            // Compare and display differences
+            const comparisonDetails = document.querySelector('.comparison-details');
+            comparisonDetails.innerHTML = generateComparisonTable(block1, block2);
+            
+            // Ensure comparison panel stays visible
+            document.getElementById('comparisonPanel').style.display = 'block';
+            
+            // Keep type selection and attributes panels hidden
+            document.querySelector('.block-list:not(:last-child)').style.display = 'none';
+            document.querySelector('.panel:not(.block-list):not(.comparison-panel)').style.display = 'none';
+            generatecomparisonConclusion();
+        }
+
+        // Function to calculate cannon DPS
+        function calculateDPS(block) {
+            if (block.typeargs === 'Cannon') {
+                const damage = parseFloat(block.cannondmg) || 0;
+                const roundsPerSec = parseFloat(block.cannonrounds) || 0;
+                const roundsPerBurst = parseFloat(block.roundsPerBurst) || 1;
+                
+                // Calculate fragments DPS if they exist
+                let fragmentDPS = 0;
+                if (block.fragments && block.fragments.length > 0) {
+                    block.fragments.forEach(fragment => {
+                        const fragmentDamage = parseFloat(fragment.damage) || 0;
+                        const fragmentRounds = parseFloat(fragment.roundsPerBurst) || 1;
+                        fragmentDPS += fragmentDamage * fragmentRounds;
+                    });
+                    // Fragment DPS is per shot, so multiply by rounds per second
+                    fragmentDPS *= roundsPerSec;
+                }
+                
+                // Base DPS + Fragment DPS
+                return (damage * roundsPerSec * roundsPerBurst) + fragmentDPS;
+            } 
+            else if (block.typeargs === 'Laser') {
+                const damage = parseFloat(block.laserdmg) || 0;
+                // Lasers do continuous damage, so DPS is just the damage value
+                return damage;
+            }
+            return 0;
+        }
+
+        // Function to generate the comparison table
+        function generateComparisonTable(block1, block2) {
+            const commonProperties = [
+                { key: 'name', label: 'Name' },
+                { key: 'typeargs', label: 'Type' },
+                { key: 'size', label: 'Size' },
+                { key: 'shape', label: 'Shape' },
+                { key: 'points', label: 'Points' },
+                { key: 'health', label: 'Durability' },
+                { key: 'capacity', label: 'Capacity' }
+            ];
+            
+            // Add type-specific properties
+            if (block1.typeargs === 'Cannon' || block2.typeargs === 'Cannon') {
+                commonProperties.push(
+                    { key: 'cannondmg', label: 'Damage per Shot' },
+                    { key: 'cannonrounds', label: 'Rounds/s' },
+                    { key: 'cannonrange', label: 'Range' },
+                    { key: 'cannonvel', label: 'Velocity' },
+                    { key: 'cannonpower', label: 'Power' },
+                    { key: 'roundsPerBurst', label: 'Rounds per Burst' },
+                    { key: 'burstiness', label: 'Burstyness' },
+                    { key: 'projectileSize', label: 'Projectile Size' },
+                    { key: 'spread', label: 'Spread' },
+                    { 
+                        key: 'dps', 
+                        label: 'DPS', 
+                        calculate: (block) => calculateDPS(block).toFixed(2)
+                    }
+                );
+            }
+            if (block1.typeargs === 'Laser' || block2.typeargs === 'Laser') {
+                commonProperties.push(
+                    { key: 'laserdmg', label: 'DPS' },
+                    { key: 'laserrange', label: 'Range' },
+                    { key: 'laserwidth', label: 'Width' },
+                    { key: 'laserpower', label: 'Power' },
+                    { key: 'lasercolor', label: 'Color' }
+                );
+            }
 
 
-    // Set general stats
-    document.getElementById('blockName').textContent = block.name;
-    document.getElementById('blockType').textContent = block.typeargs;
-    document.getElementById('blockShape').textContent = block.shape;
-    document.getElementById('blockSize').textContent = block.size;
+            if (block1.typeargs === 'Generator' || block2.typeargs === 'Generator') {
+                commonProperties.push(
+                    { key: 'powerCapacity', label: 'Power Capacity' },
+                    { key: 'generatorCapacityPerSec', label: 'Generation per Sec' }
+                );
+            }
+
+            if (block1.typeargs === 'Command' || block2.typeargs === 'Command') {
+                commonProperties.push(
+                    { key: 'faction', label: 'Faction' }
+                );
+            }
+
+            if (block1.typeargs === 'Thruster' || block2.typeargs === 'Thruster') {
+                commonProperties.push(
+                    { key: 'thrust', label: 'Thrust' },
+                );
+            }
+
+            if (block1.typeargs === 'Shield' || block2.typeargs === 'Shield') {
+                commonProperties.push(
+                    { key: 'shieldradius', label: 'Radius' },
+                    { key: 'shieldpower', label: 'Power' },
+                    { key: 'shieldhealth', label: 'Health' },
+                    { key: 'shieldregen', label: 'Regen/s' }
+                );
+            }
+
+            if (block1.typeargs === 'Tractor' || block2.typeargs === 'Tractor') {
+                commonProperties.push(
+                    { key: 'tractorRange', label: 'TractorRange' }
+                );
+            }
+
+            let html = `
+                <table class="comparison-table">
 
 
-    document.getElementById('blockHealth').textContent = block.health;
-    document.getElementById('blockCapacity').textContent = block.capacity;
-    document.getElementById('blockPoints').textContent = block.points;
+                    <tr>
+                        <th>Property</th>
+                        <th>${block1.name}</th>
+                        <th>${block2.name}</th>
+                        <th>Difference</th>
+                    </tr>
+            `;
+            
+            commonProperties.forEach(prop => {
+                let val1, val2;
+                if (prop.calculate) {
+                    val1 = prop.calculate(block1);
+                    val2 = prop.calculate(block2);
+                } else {
+                    val1 = block1[prop.key];
+                    val2 = block2[prop.key];
+                }
+                
+                const isDifferent = val1 !== val2;
+                let difference = '';
+                
+                // Calculate difference for numeric values
+                if (!isNaN(val1) && !isNaN(val2)) {
+                    difference = (val2 - val1).toFixed(2);
+                    // Add percentage difference for DPS
+                    if (prop.key === 'dps' || (prop.key === 'laserdmg' && (block1.typeargs === 'Laser' || block2.typeargs === 'Laser'))) {
+                        const percentDiff = ((val2 - val1) / val1 * 100).toFixed(1);
+                        difference += ` (${percentDiff}%)`;
+                    }
+                }
+                
+                // Add color coding for DPS comparison
+                let rowClass = isDifferent ? 'different' : '';
+                if ((prop.key === 'dps' || (prop.key === 'laserdmg' && (block1.typeargs === 'Laser' || block2.typeargs === 'Laser'))) && isDifferent) {
+                    rowClass += val2 > val1 ? ' higher-dps' : ' lower-dps';
+                }
+                
+                html += `
+                    <tr class="${rowClass}">
+                        <td>${prop.label}</td>
+                        <td>${val1 || '-'}</td>
+                        <td>${val2 || '-'}</td>
+                        <td>${difference}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</table>';
+            return html;
+        }
 
-    // Type-specific stats
-    const typeSpecificStats = document.getElementById('blockTypeSpecificStats');
-    typeSpecificStats.innerHTML = '';  // Clear previous stats
+        // Initializes drop zones
+        function initializeDropZones() {
+            const dropZones = ['dropZone1', 'dropZone2'];
+            const selects = ['block1Select', 'block2Select'];
+            
+            dropZones.forEach((zoneId, index) => {
+                const zone = document.getElementById(zoneId);
+                const select = document.getElementById(selects[index]);
+                
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                });
+                
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    
+                    const blockId = e.dataTransfer.getData('text/plain');
+                    select.value = blockId;
+                    updateComparison();
+                });
+            });
+        }
 
-    if (block.typeargs === 'Cannon') {
-        typeSpecificStats.innerHTML = `
-            <p><strong>Damage per Shot:</strong> ${block.cannondmg}</p>
-            <p><strong>Rounds per Second:</strong> ${block.cannonrounds}</p>
-            <p><strong>Range:</strong> ${block.cannonrange}</p>
-            <p><strong>Velocity:</strong> ${block.cannonvel}</p>
-            <p><strong>Rounds per Burst:</strong> ${block.roundsPerBurst}</p>
-            <p><strong>Spread:</strong> ${block.spread}</p>
-        `;
-    } else if (block.typeargs === 'Laser') {
-        typeSpecificStats.innerHTML = `
-            <p><strong>Damage per Second (DPS):</strong> ${block.laserdmg}</p>
-            <p><strong>Range:</strong> ${block.laserrange}</p>
-            <p><strong>Width:</strong> ${block.laserwidth}</p>
-            <p><strong>Color:</strong> ${block.lasercolor}</p>
-        `;
-    }
+        // Function to toggle full screen
+        function fullScreen() {
+            document.documentElement.requestFullscreen();
+        }
 
-    // Calculate and set the block's DPS
-    const dps = calculateDPS(block);
-    document.getElementById('blockDPS').textContent = dps.toFixed(2);
+        // Function to show block statistics
+        function showBlockStatistics(blockId) {
+            const block = blocks.find(b => b.id == blockId);
 
-    // Show the panel
-    blockStatisticsPanel.style.display = 'block';
-}
+            if (!block) return;
 
-function closeBlockStatistics() {
-    const panelList = document.querySelectorAll('.panel');
-    panelList.forEach(panel => {
-        panel.style.display = 'block';
-    });
+            const panelList = document.querySelectorAll('.panel');
+            panelList.forEach(panel => {
+                panel.style.display = 'none';
+            });
 
-    const comparisonPanel = document.getElementById('comparisonPanel');
-    comparisonPanel.style.display = 'none';
-
-    const blockStatisticsPanel = document.getElementById('blockStatisticsPanel');
-    blockStatisticsPanel.style.display = 'none';
-}
+            const blockStatisticsPanel = document.getElementById('blockStatisticsPanel');
+            blockStatisticsPanel.style.display = 'block';
 
 
+            // Set general stats
+            document.getElementById('blockName').textContent = block.name;
+            document.getElementById('blockType').textContent = block.typeargs;
+            document.getElementById('blockShape').textContent = block.shape;
+            document.getElementById('blockSize').textContent = block.size;
+
+
+            document.getElementById('blockHealth').textContent = block.health;
+            document.getElementById('blockCapacity').textContent = block.capacity;
+            document.getElementById('blockPoints').textContent = block.points;
+
+            // Type-specific stats
+            const typeSpecificStats = document.getElementById('blockTypeSpecificStats');
+            typeSpecificStats.innerHTML = '';  // Clear previous stats
+
+            if (block.typeargs === 'Cannon') {
+                typeSpecificStats.innerHTML = `
+                    <p><strong>Damage per Shot:</strong> ${block.cannondmg}</p>
+                    <p><strong>Rounds per Second:</strong> ${block.cannonrounds}</p>
+                    <p><strong>Range:</strong> ${block.cannonrange}</p>
+                    <p><strong>Velocity:</strong> ${block.cannonvel}</p>
+                    <p><strong>Rounds per Burst:</strong> ${block.roundsPerBurst}</p>
+                    <p><strong>Spread:</strong> ${block.spread}</p>
+                `;
+            } else if (block.typeargs === 'Laser') {
+                typeSpecificStats.innerHTML = `
+                    <p><strong>Damage per Second (DPS):</strong> ${block.laserdmg}</p>
+                    <p><strong>Range:</strong> ${block.laserrange}</p>
+                    <p><strong>Width:</strong> ${block.laserwidth}</p>
+                    <p><strong>Color:</strong> ${block.lasercolor}</p>
+                `;
+            }
+
+            // Calculate and set the block's DPS
+            const dps = calculateDPS(block);
+            document.getElementById('blockDPS').textContent = dps.toFixed(2);
+
+            // Show the panel
+            blockStatisticsPanel.style.display = 'block';
+        }
+
+        // Function to close the block statistics panel
+
+        function closeBlockStatistics() {
+            const panelList = document.querySelectorAll('.panel');
+            panelList.forEach(panel => {
+                panel.style.display = 'block';
+            });
+
+            const comparisonPanel = document.getElementById('comparisonPanel');
+            comparisonPanel.style.display = 'none';
+
+            const blockStatisticsPanel = document.getElementById('blockStatisticsPanel');
+            blockStatisticsPanel.style.display = 'none';
+        }
 
 </script>
 </body>
