@@ -418,29 +418,50 @@
             blockList.innerHTML = '';
             
             blocks.forEach((block, index) => {
-                if (!searchTerm || 
-                    block.name.toLowerCase().includes(searchTerm) ||
-                    block.typeargs.toLowerCase().includes(searchTerm)) {
-                    
-                    let button = document.createElement('button');
-                    button.textContent = `${block.name} (${block.typeargs})`;
-                    button.onclick = () => renderAttributes(blocks[index]);
-                    blockList.appendChild(button);
-                    
-                    let deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = "Delete";
-                    deleteBtn.style.background = "red";
-                    deleteBtn.style.color = "white"; 
-                    deleteBtn.onclick = () => deleteBlock(index);
-                    blockList.appendChild(deleteBtn);
-
-                    let cloneBtn = document.createElement('button');
-                    cloneBtn.textContent = "Clone";
-                    cloneBtn.style.background = "orange";
-                    cloneBtn.style.color = "white";
-                    cloneBtn.onclick = () => cloneBlock(index);
-                    blockList.appendChild(cloneBtn);
+                if (searchTerm && !block.name.toLowerCase().includes(searchTerm) && 
+                    !block.typeargs.toLowerCase().includes(searchTerm)) {
+                    return;
                 }
+                
+                const blockContainer = document.createElement('div');
+                blockContainer.style.display = 'grid';
+                blockContainer.style.gridTemplateColumns = '1fr';
+                blockContainer.style.gap = '5px';
+                
+                let button = document.createElement('button');
+                button.textContent = `${block.name} (${block.typeargs})`;
+                button.onclick = () => renderAttributes(blocks[index]);
+                button.style.width = '100%';
+                
+                // Add drag functionality
+                button.draggable = true;
+                button.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', block.id);
+                });
+                
+                blockContainer.appendChild(button);
+                
+                const buttonGroup = document.createElement('div');
+                buttonGroup.style.display = 'grid';
+                buttonGroup.style.gridTemplateColumns = '1fr 1fr';
+                buttonGroup.style.gap = '5px';
+                
+                let deleteBtn = document.createElement('button');
+                deleteBtn.textContent = "Delete";
+                deleteBtn.style.background = "red";
+                deleteBtn.style.color = "white";
+                deleteBtn.onclick = () => deleteBlock(index);
+                buttonGroup.appendChild(deleteBtn);
+
+                let cloneBtn = document.createElement('button');
+                cloneBtn.textContent = "Clone";
+                cloneBtn.style.background = "orange";
+                cloneBtn.style.color = "white";
+                cloneBtn.onclick = () => cloneBlock(index);
+                buttonGroup.appendChild(cloneBtn);
+                
+                blockContainer.appendChild(buttonGroup);
+                blockList.appendChild(blockContainer);
             });
         }
 
