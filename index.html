@@ -13,7 +13,8 @@
         label { width: 97%; display: inline-block; margin-top: 2px; margin-bottom: 2px; }
         input, select { width: 100%; padding: 3px; margin-bottom: 3px; }
         #searchInput { margin-bottom: 10px; padding: 5px; width: 95%; }
-        #exportBtn, #creditsBtn, #loadBtn, #darkModeBtn, #clearStorageBtn, #tutorialBtn, #compareBtn, #fullScreenBtn { margin-top: 10px; padding: 10px; background: green; color: white; border: none; cursor: pointer; }        #creditsBtn { background: blue; }
+        #exportBtn, #creditsBtn, #loadBtn, #darkModeBtn, #clearStorageBtn, #tutorialBtn, #compareBtn, #fullScreenBtn { margin-top: 10px; padding: 10px; background: green; color: white; border: none; cursor: pointer; }        
+        #creditsBtn { background: blue; }
         #loadBtn { background-color: green; }
         #darkModeBtn { background-color: blue; }
         #clearStorageBtn { background-color: red; }
@@ -170,6 +171,57 @@
             cursor: pointer;
         }
 
+        #blockStatisticsPanel {
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #blockStatisticsPanel h3 {
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .block-statistics-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        h4 {
+            margin-top: 20px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Dark mode styles */
+        body.dark-mode #blockStatisticsPanel {
+            background-color: #333;
+            color: #ddd;
+        }
+
+        body.dark-mode #blockStatisticsPanel h3 {
+            color: #fff;
+        }
+
+        body.dark-mode .block-statistics-container p,
+        body.dark-mode .block-statistics-container h4 {
+            color: #ccc;
+        }
+
         /* Tutorial Modal Styles */
         #tutorialModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-width: 600px; max-height: 80vh; overflow-y: auto; z-index: 1000; }
         #tutorialModal.dark-mode { background: #333; color: white; }
@@ -308,6 +360,36 @@
                 </div>
                 <div class="comparison-details"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Block-Specific Statistics Screen -->
+    <div id="blockStatisticsPanel" class="modal-overlay" style="display: none; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -20%); padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-width: 600px; max-height: 80vh; overflow-y: auto; z-index: 1000;">
+        <h3>Block Statistics</h3>
+        <div class="block-statistics-container">
+
+            <div>
+                <h4>General Stats</h4>
+                <p><strong>Name:</strong> <span id="blockName"></span></p>
+                <p><strong>Type:</strong> <span id="blockType"></span></p>
+                <p><strong>Shape:</strong> <span id="blockShape"></span></p>
+                <p><strong>Size:</strong> <span id="blockSize"></span></p>
+                <p><strong>Health:</strong> <span id="blockHealth"></span></p>
+                <p><strong>Capacity:</strong> <span id="blockCapacity"></span></p>
+                <p><strong>Points:</strong> <span id="blockPoints"></span></p>
+            </div>
+
+            <div>
+                <h4>Type-Specific Stats</h4>
+                <div id="blockTypeSpecificStats"></div>
+            </div>
+
+            <div>
+                <h4>Performance Stats</h4>
+                <p><strong>DPS:</strong> <span id="blockDPS"></span></p>
+            </div>
+
+            <button onclick="closeBlockStatistics()">Close</button>
         </div>
     </div>
 
@@ -560,7 +642,7 @@
                     
                     // More pronounced scaling for damage and velocity
                     barrelLength = Math.min(turretSize * (velocity / 500) * 0.5, turretSize * 2.5);
-                    barrelWidth = Math.min(turretSize * (damage / 10) * 0.15, turretSize * 0.8); // Increased damage impact
+                    barrelWidth = Math.min(turretSize * (damage / 12) * 0.15, turretSize * 0.8); // Increased damage impact
                     
                     // Calculate barrel count based on rounds per second (reduced impact)
                     barrelCount = Math.min(Math.ceil(roundsPerSec / 4), 4); // Max 4 barrels, requires higher RPS
@@ -638,6 +720,7 @@
                     `;
                 }
             }
+
 
             // Create or update preview with adjusted z-indices
             previewDiv.innerHTML = `
@@ -772,10 +855,11 @@
                 fragmentList.appendChild(addFragmentBtn);
             }
 
-            attributesHTML += `<button onclick="saveBlock()">Add Block</button>`;
+            attributesHTML += `<button onclick="saveBlock()">Add/Save Block</button>`;
             blockAttributesDiv.innerHTML += blockAttributesHTML;
             featureAttributesDiv.innerHTML += attributesHTML;
             shroudList.innerHTML += shroudListHTML;
+
 
             // Add event listeners for preview updates
             ['size', 'shape', 'fillColor1', 'fillColor2', 'lineColor', 'turreted', 'damage', 'muzzleVel', 
@@ -913,8 +997,8 @@
                 lineColor: document.getElementById('lineColor') ? document.getElementById('lineColor').value : '#000000',
                 density: document.getElementById('density') ? document.getElementById('density').value : 0,
                 spread: document.getElementById('spread') ? document.getElementById('spread').value : 0,
-                projectileSize: document.getElementById('projectileSize') ? document.getElementById('projectileSize').value : 1,
-                roundsPerBurst: document.getElementById('roundsPerBurst') ? document.getElementById('roundsPerBurst').value : 1,
+                projectileSize: document.getElementById('projectileSize') ? document.getElementById('projectileSize').value : 0,
+                roundsPerBurst: document.getElementById('roundsPerBurst') ? document.getElementById('roundsPerBurst').value : 0,
                 burstiness: document.getElementById('burstiness') ? document.getElementById('burstiness').value : 0,
                 shrouds: [],
                 fragments: []
@@ -1067,9 +1151,9 @@
             
             blockList.innerHTML = '';
             blockList.style.display = 'grid';
-            blockList.style.gridTemplateColumns = 'repeat(3, 1fr)';
-            blockList.style.gap = '10px';
-            blockList.style.padding = '10px';
+            blockList.style.gridTemplateColumns = 'repeat(2, 1fr)';
+            blockList.style.gap = '8px';
+            blockList.style.padding = '5px';
             
             blocks.forEach((block, index) => {
                 if (searchTerm && !block.name.toLowerCase().includes(searchTerm) && 
@@ -1080,7 +1164,7 @@
                 const blockContainer = document.createElement('div');
                 blockContainer.style.display = 'grid';
                 blockContainer.style.gridTemplateColumns = '1fr';
-                blockContainer.style.gap = '5px';
+                blockContainer.style.gap = '2px';
                 
                 let button = document.createElement('button');
                 button.textContent = `${block.name} (${block.typeargs})`;
@@ -1097,9 +1181,9 @@
                 
                 const buttonGroup = document.createElement('div');
                 buttonGroup.style.display = 'grid';
-                buttonGroup.style.gridTemplateColumns = '1fr 1fr';
-                buttonGroup.style.gap = '5px';
-                
+                buttonGroup.style.gridTemplateColumns = '1fr 1fr 1fr';
+                buttonGroup.style.gap = '1px';
+
                 let deleteBtn = document.createElement('button');
                 deleteBtn.textContent = "Delete";
                 deleteBtn.style.background = "red";
@@ -1114,6 +1198,13 @@
                 cloneBtn.onclick = () => cloneBlock(index);
                 buttonGroup.appendChild(cloneBtn);
                 
+                let statsBtn = document.createElement('button');
+                statsBtn.textContent = "Stats";
+                statsBtn.style.background = "blue";
+                statsBtn.style.color = "white";
+                statsBtn.onclick = () => showBlockStatistics(block.id);
+                buttonGroup.appendChild(statsBtn);
+
                 blockContainer.appendChild(buttonGroup);
                 blockList.appendChild(blockContainer);
             });
@@ -1260,37 +1351,41 @@
     }
 
     function loadBlocks() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.lua';
-        input.onchange = async (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const text = await file.text();
-                parseLuaBlocks(text);
-            }
-        };
-        input.click();
-    }
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.lua';
+    input.onchange = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const text = await file.text();
+            parseLuaBlocks(text);
+        }
+    };
+    input.click();
+}
 
-    function parseLuaBlocks(luaCode) {
+function parseLuaBlocks(luaCode) {
     const blockRegex = /{\s*(\d+),([\s\S]*?)\s*},/g;
     let match;
 
     blocks = []; // Clear existing blocks
 
     while ((match = blockRegex.exec(luaCode)) !== null) {
-        let block = { id: parseInt(match[1]), typeargs: "", turreted: "False" };
+        let block = { 
+            id: parseInt(match[1]), 
+            typeargs: "", 
+            turreted: "False", 
+            shrouds: [], 
+            fragments: [] 
+        };
         let attributes = match[2];
 
-        // Extract key-value pairs
         attributes.split("\n").forEach(line => {
             let keyValue = line.match(/\s*(\w+)\s*=\s*(.*?),/);
             if (keyValue) {
                 let key = keyValue[1].trim();
                 let value = keyValue[2].trim().replace(/"|,/g, "");
 
-                // Handle special cases
                 if (key === "name" || key === "shape") {
                     block[key] = value;
                 } else if (key === "features") {
@@ -1302,20 +1397,57 @@
                     if (value.includes("THRUSTER")) block.typeargs = "Thruster";
                     if (value.includes("FACTORY")) block.typeargs = "Factory";
                     if (value.includes("SHIELD")) block.typeargs = "Shield";
-                    
+                    if (value.includes("TRACTOR")) block.typeargs = "Tractor";
                 } else if (key === "cannon") {
-                    let cannonStats = value.match(/damage\s*=\s*(\d+).*?roundsPerSec\s*=\s*(\d+).*?range\s*=\s*(\d+)/s);
+                    let cannonStats = value.match(/damage\s*=\s*(\d+).*?roundsPerSec\s*=\s*(\d+).*?range\s*=\s*(\d+).*?muzzleVel\s*=\s*(\d+).*?power\s*=\s*(\d+).*?spread\s*=\s*([\d.]+).*?projectileSize\s*=\s*(\d+).*?roundsPerBurst\s*=\s*(\d+).*?burstyness\s*=\s*([\d.]+)/s);
                     if (cannonStats) {
                         block.cannondmg = parseInt(cannonStats[1]);
                         block.cannonrounds = parseInt(cannonStats[2]);
                         block.cannonrange = parseInt(cannonStats[3]);
+                        block.cannonvel = parseInt(cannonStats[4]);
+                        block.cannonpower = parseInt(cannonStats[5]);
+                        block.spread = parseFloat(cannonStats[6]);
+                        block.projectileSize = parseInt(cannonStats[7]);
+                        block.roundsPerBurst = parseInt(cannonStats[8]);
+                        block.burstiness = parseFloat(cannonStats[9]);
                     }
                 } else if (key === "laser") {
-                    let laserStats = value.match(/damage\s*=\s*(\d+).*?range\s*=\s*(\d+)/s);
+                    let laserStats = value.match(/damage\s*=\s*(\d+).*?range\s*=\s*(\d+).*?width\s*=\s*(\d+).*?power\s*=\s*(\d+).*?color\s*=\s*(0x\w+)/s);
                     if (laserStats) {
                         block.laserdmg = parseInt(laserStats[1]);
                         block.laserrange = parseInt(laserStats[2]);
+                        block.laserwidth = parseInt(laserStats[3]);
+                        block.laserpower = parseInt(laserStats[4]);
+                        block.lasercolor = laserStats[5];
                     }
+                } else if (key === "shield") {
+                    let shieldStats = value.match(/radius\s*=\s*(\d+).*?strenght\s*=\s*(\d+).*?regen\s*=\s*(\d+).*?delay\s*=\s*(\d+).*?color\s*=\s*(0x\w+).*?damagedColor\s*=\s*(0x\w+)/s);
+                    if (shieldStats) {
+                        block.shieldradius = parseInt(shieldStats[1]);
+                        block.shieldhealth = parseInt(shieldStats[2]);
+                        block.shieldregen = parseInt(shieldStats[3]);
+                        block.shielddelay = parseInt(shieldStats[4]);
+                        block.shieldcolor = shieldStats[5];
+                        block.shielddamagedColor = shieldStats[6];
+                    }
+                } else if (key === "shroud") {
+                    let shroudMatches = [...value.matchAll(/{size\s*=\s*(\d+),\s*offset\s*=\s*([^,]+),\s*taper\s*=\s*([\d.]+),\s*shape\s*=\s*(\w+)}/g)];
+                    block.shrouds = shroudMatches.map(shroud => ({
+                        size: parseInt(shroud[1]),
+                        offset: shroud[2],
+                        taper: parseFloat(shroud[3]),
+                        shape: shroud[4]
+                    }));
+                } else if (key === "fragment") {
+                    let fragmentMatches = [...value.matchAll(/{spread\s*=\s*([\d.]+),\s*range\s*=\s*(\d+),\s*damage\s*=\s*(\d+),\s*muzzleVel\s*=\s*(\d+),\s*projectileSize\s*=\s*(\d+),\s*roundsPerBurst\s*=\s*(\d+)}/g)];
+                    block.fragments = fragmentMatches.map(fragment => ({
+                        spread: parseFloat(fragment[1]),
+                        range: parseInt(fragment[2]),
+                        damage: parseInt(fragment[3]),
+                        muzzleVel: parseInt(fragment[4]),
+                        projectileSize: parseInt(fragment[5]),
+                        roundsPerBurst: parseInt(fragment[6])
+                    }));
                 } else if (!isNaN(value)) {
                     block[key] = parseFloat(value);
                 }
@@ -1325,7 +1457,7 @@
         blocks.push(block);
     }
 
-    updateBlockList(); // Refresh UI
+    updateBlockList();
 }
 
 function clearSavedBlocks() {
@@ -1842,6 +1974,76 @@ function initializeDropZones() {
 function fullScreen() {
     document.documentElement.requestFullscreen();
 }
+
+function showBlockStatistics(blockId) {
+    const block = blocks.find(b => b.id == blockId);
+
+    if (!block) return;
+
+    const panelList = document.querySelectorAll('.panel');
+    panelList.forEach(panel => {
+        panel.style.display = 'none';
+    });
+
+    const blockStatisticsPanel = document.getElementById('blockStatisticsPanel');
+    blockStatisticsPanel.style.display = 'block';
+
+
+    // Set general stats
+    document.getElementById('blockName').textContent = block.name;
+    document.getElementById('blockType').textContent = block.typeargs;
+    document.getElementById('blockShape').textContent = block.shape;
+    document.getElementById('blockSize').textContent = block.size;
+
+
+    document.getElementById('blockHealth').textContent = block.health;
+    document.getElementById('blockCapacity').textContent = block.capacity;
+    document.getElementById('blockPoints').textContent = block.points;
+
+    // Type-specific stats
+    const typeSpecificStats = document.getElementById('blockTypeSpecificStats');
+    typeSpecificStats.innerHTML = '';  // Clear previous stats
+
+    if (block.typeargs === 'Cannon') {
+        typeSpecificStats.innerHTML = `
+            <p><strong>Damage per Shot:</strong> ${block.cannondmg}</p>
+            <p><strong>Rounds per Second:</strong> ${block.cannonrounds}</p>
+            <p><strong>Range:</strong> ${block.cannonrange}</p>
+            <p><strong>Velocity:</strong> ${block.cannonvel}</p>
+            <p><strong>Rounds per Burst:</strong> ${block.roundsPerBurst}</p>
+            <p><strong>Spread:</strong> ${block.spread}</p>
+        `;
+    } else if (block.typeargs === 'Laser') {
+        typeSpecificStats.innerHTML = `
+            <p><strong>Damage per Second (DPS):</strong> ${block.laserdmg}</p>
+            <p><strong>Range:</strong> ${block.laserrange}</p>
+            <p><strong>Width:</strong> ${block.laserwidth}</p>
+            <p><strong>Color:</strong> ${block.lasercolor}</p>
+        `;
+    }
+
+    // Calculate and set the block's DPS
+    const dps = calculateDPS(block);
+    document.getElementById('blockDPS').textContent = dps.toFixed(2);
+
+    // Show the panel
+    blockStatisticsPanel.style.display = 'block';
+}
+
+function closeBlockStatistics() {
+    const panelList = document.querySelectorAll('.panel');
+    panelList.forEach(panel => {
+        panel.style.display = 'block';
+    });
+
+    const comparisonPanel = document.getElementById('comparisonPanel');
+    comparisonPanel.style.display = 'none';
+
+    const blockStatisticsPanel = document.getElementById('blockStatisticsPanel');
+    blockStatisticsPanel.style.display = 'none';
+}
+
+
 
 </script>
 </body>
