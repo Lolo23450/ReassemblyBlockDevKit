@@ -226,7 +226,6 @@
     <button id="loadBtn" onclick="loadBlocks()">Load blocks.lua (WIP)</button>
     <button id="clearStorageBtn" onclick="clearSavedBlocks()">Clear Saved Blocks</button>
     <button id="compareBtn" onclick="showComparison()" style="background: #007BFF; color: white; margin-right: 10px;">Compare Blocks</button>
-
     <div class="project-manager-panel">
         <h2>Project Manager</h2>
         <div class="project-controls">
@@ -246,7 +245,7 @@
     <div id="creditsPopup">
         <h2>Credits</h2>
         <p>Developed by: Lolo</p>
-        <p>Contributors: ChatGPT, Copilot, ClickerAI Assistant</p>
+        <p>Contributors: ChatGPT, Copilot, ClickerAI (Claude)</p>
         <button id="closeCredits" onclick="closeCredits()">Close</button>
     </div>
     <input type="text" id="searchInput" placeholder="Search blocks..." oninput="filterBlocks()">
@@ -340,10 +339,34 @@
         </div>
 
         <div class="tutorial-step">
-            <h4>Step 4: Exporting</h4>
+            <h4>Step 4: Shrouds</h4>
+            <p>1. Click on the "Shrouds" button<br>
+            2. Select a block to add a shroud to it<br>
+            3. Adjust the shroud size, offset, and taper<p>
+        </div>
+
+        <div class="tutorial-step">
+            <h4>Step 5: Fragments</h4>
+            <p>1. Click on the "Fragments" button<br>
+            2. Select a block to add a fragment to it<br>
+            3. Adjust the fragment damage, velocity, range, spread, rounds per burst, etc<p>
+        </div>
+
+        <div class="tutorial-step">
+            <h4>Step 6: Block Comparison</h4>
+            <p>1. Click on the "Compare Blocks" button on top of the page<br>
+            2. Select two blocks to compare them by dragging and dropping them into the comparison panel, or by selecting them from the dropdown menus<br>
+            3. See the differences between the two blocks<br>
+            4. Click on the "Compare Blocks" button again to close the comparison panel</p>
+        </div>
+
+        <div class="tutorial-step">
+            <h4>Step 7: Exporting</h4>
+
             <p>- Click "Export blocks.lua" to save your blocks as a Lua file<br>
             - Place the exported file in your Reassembly mods folder<br>
             - The default path is: users/username/Saved Games/Reassembly/mods/</p>
+
         </div>
 
         <div class="tutorial-step">
@@ -875,6 +898,7 @@
                 typeargs: document.querySelector('h4') ? document.querySelector('h4').textContent.split(' ')[0] : '',
                 generalargs: document.querySelector('h5') ? document.querySelector('h5').textContent.split(' ')[0] : '',
                 name: document.getElementById('name') ? document.getElementById('name').value : '',
+
                 shape: document.getElementById('shape') ? document.getElementById('shape').value : '',
                 size: document.getElementById('size') ? document.getElementById('size').value : 0,
                 group: document.getElementById('group') ? document.getElementById('group').value : '',
@@ -1623,6 +1647,7 @@ function updateComparison() {
     // Keep type selection and attributes panels hidden
     document.querySelector('.block-list:not(:last-child)').style.display = 'none';
     document.querySelector('.panel:not(.block-list):not(.comparison-panel)').style.display = 'none';
+    generatecomparisonConclusion();
 }
 
 function calculateDPS(block) {
@@ -1814,4 +1839,5 @@ function initializeDropZones() {
 
 </script>
 </body>
+
 </html>
