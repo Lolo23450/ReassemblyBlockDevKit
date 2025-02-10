@@ -17,7 +17,7 @@
         #loadBtn { background-color: green; }
         #darkModeBtn { background-color: blue; }
         #clearStorageBtn { background-color: red; }
-        #creditsPopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid black; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); }
+        #creditsPopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid black; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); z-index: 1000; }
         #closeCredits { margin-top: 10px; padding: 5px; background: red; color: white; border: none; cursor: pointer; }
         
         /* Dark Mode Styles */
@@ -170,183 +170,50 @@
         }
 
         /* Tutorial Modal Styles */
-        #tutorialModal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        #tutorialModal.dark-mode {
-            background: #333;
-            color: white;
-        }
-
-        .tutorial-step {
-            margin-bottom: 20px;
-            padding: 10px;
-            border-left: 4px solid #007BFF;
-            background: rgba(0, 123, 255, 0.1);
-        }
-
-        .tutorial-step h4 {
-            margin-top: 0;
-            color: #007BFF;
-        }
-
-        #closeTutorial {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #FF4136;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-
-        .block-preview {
-            width: 200px;
-            height: 200px;
-            border: 2px solid #ccc;
-            margin: 10px auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .preview-block {
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .preview-shape {
-            width: 100%;
-            height: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .dark-mode .block-preview {
-            border-color: #666;
-        }
-
-        /* Shape styles */
-        .shape-SQUARE {
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-        }
-
-        .shape-HEXAGON {
-            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-        }
-
-        .shape-PENTAGON {
-            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-        }
-
-        .shape-OCTAGON {
-            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
-        }
-
-        .shape-TRI {
-            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-        }
-
-        .comparison-panel {
-            flex: 2;  /* Take up the same space as the two panels it replaces */
-            margin: 10px;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .comparison-controls {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .comparison-select {
-            display: flex;
-            gap: 10px;
-        }
-
-        .comparison-previews {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
+        #tutorialModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-width: 600px; max-height: 80vh; overflow-y: auto; z-index: 1000; }
+        #tutorialModal.dark-mode { background: #333; color: white; }
+        .tutorial-step { margin-bottom: 20px; padding: 10px; border-left: 4px solid #007BFF; background: rgba(0, 123, 255, 0.1); }
+        .tutorial-step h4 { margin-top: 0; color: #007BFF; }
+        #closeTutorial { position: absolute; top: 10px; right: 10px; background: #FF4136; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 999; }
+        /* Normal preview styles */
+        #blockPreview { width: 200px; height: 200px; border: 2px solid #ccc; margin: 10px 0; position: relative; z-index: 1; }
+        #blockPreview .preview-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        /* Comparison preview styles */
+        .comparison-previews .block-preview { width: 200px; height: 200px; border: 2px solid #ccc; margin: 10px; position: relative; }
+        .comparison-previews .preview-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        /* Common styles */
+        .preview-shape { width: 100%; height: 100%; transition: all 0.3s ease; }
+        .dark-mode #blockPreview,
+        .dark-mode .comparison-previews .block-preview { border-color: #666; }
+        .comparison-previews { display: flex; justify-content: space-around; align-items: center; margin: 20px 0; }
+        .comparison-controls { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .comparison-select { display: flex; gap: 10px; }
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .comparison-table th,
-        .comparison-table td {
-            padding: 8px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        .comparison-table tr.different {
-            background-color: #fff3cd;
-        }
-
-        .dark-mode .comparison-table tr.different {
-            background-color: #2c2c2c;
-        }
-
-        .dark-mode .comparison-panel {
-            background-color: #1a1a1a;
-            border-color: #333;
-        }
-
+        .comparison-table td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        .comparison-table tr.different { background-color: #fff3cd; }
+        .dark-mode .comparison-table tr.different { background-color: #2c2c2c; }
+        .dark-mode .comparison-panel { background-color: #1a1a1a; border-color: #333; }
         .dark-mode .comparison-table th,
-        .dark-mode .comparison-table td {
-            border-color: #333;
-        }
-
+        .dark-mode .comparison-table td { border-color: #333; }
         /* ... existing comparison styles ... */
-
-        .comparison-table tr.higher-dps {
-            background-color: #d4edda;
-        }
-
-        .comparison-table tr.lower-dps {
-            background-color: #f8d7da;
-        }
-
-        .dark-mode .comparison-table tr.higher-dps {
-            background-color: #1e3320;
-        }
-
-        .dark-mode .comparison-table tr.lower-dps {
-            background-color: #382020;
-        }
+        .comparison-table tr.higher-dps { background-color: #d4edda; }
+        .comparison-table tr.lower-dps { background-color: #f8d7da; }
+        .dark-mode .comparison-table tr.higher-dps { background-color: #1e3320; }
+        .dark-mode .comparison-table tr.lower-dps { background-color: #382020; }
+        .drop-zone { width: 150px; height: 60px; border: 2px dashed #ccc; border-radius: 4px; margin: 10px; display: flex; align-items: center; justify-content: center; text-align: center; color: #666; transition: all 0.3s ease; }
+        .drop-zone.drag-over { background-color: rgba(0, 123, 255, 0.1); border-color: #007bff; }
+        .dark-mode .drop-zone { border-color: #666; color: #999; }
+        .dark-mode .drop-zone.drag-over { background-color: rgba(0, 123, 255, 0.2); border-color: #0056b3; }
+        .comparison-select { display: grid; grid-template-columns: auto 1fr auto 1fr; align-items: center; gap: 10px; }
+        /* Shape styles */
+        .shape-SQUARE { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+        .shape-HEXAGON { clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
+        .shape-PENTAGON { clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+        .shape-OCTAGON { clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%); }
+        .shape-TRI { clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+        .comparison-panel { flex: 2;  /* Take up the same space as the two panels it replaces */ margin: 10px; padding: 20px; background-color: #ffffff; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
 <body>
@@ -412,13 +279,38 @@
             <button id="exportBtn" onclick="exportBlocks()">Export blocks.lua</button>
         </div>
         <div class="panel block-list">
-
             <h3>Created Blocks</h3>
             <ul id="blockList"></ul>
         </div>
+        <div class="panel comparison-panel" style="display: none;" id="comparisonPanel">
+            <h3>Block Comparison</h3>
+            <div class="comparison-controls">
+                <div class="comparison-select">
+                    <select id="block1Select" onchange="updateComparison()">
+                        <option value="">Select Block 1</option>
+                    </select>
+                    <div id="dropZone1" class="drop-zone">
+                        Drop Block Here
+                    </div>
+                    <select id="block2Select" onchange="updateComparison()">
+                        <option value="">Select Block 2</option>
+                    </select>
+                    <div id="dropZone2" class="drop-zone">
+                        Drop Block Here
+                    </div>
+                </div>
+            </div>
+            <div class="comparison-content">
+                <div class="comparison-previews">
+                    <div id="preview1" class="block-preview"></div>
+                    <div id="preview2" class="block-preview"></div>
+                </div>
+                <div class="comparison-details"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- Add Tutorial Modal -->
+    <!-- Add Tutorial Modal --> 
     <div class="modal-overlay" id="tutorialOverlay"></div>
     <div id="tutorialModal">
         <button id="closeTutorial" onclick="closeTutorial()">×</button>
@@ -451,7 +343,7 @@
             <h4>Step 4: Exporting</h4>
             <p>- Click "Export blocks.lua" to save your blocks as a Lua file<br>
             - Place the exported file in your Reassembly mods folder<br>
-            - The default path is: Steam/steamapps/common/Reassembly/mods/</p>
+            - The default path is: users/username/Saved Games/Reassembly/mods/</p>
         </div>
 
         <div class="tutorial-step">
@@ -459,28 +351,6 @@
             <p>- Use dark/light mode toggle for better visibility<br>
             - Save your work frequently<br>
             - Make backup copies of important projects</p>
-        </div>
-    </div>
-
-    <!-- Add this HTML section after your existing panels -->
-    <div class="panel comparison-panel" style="display: none;" id="comparisonPanel">
-        <h3>Block Comparison</h3>
-        <div class="comparison-controls">
-            <div class="comparison-select">
-                <select id="block1Select" onchange="updateComparison()">
-                    <option value="">Select Block 1</option>
-                </select>
-                <select id="block2Select" onchange="updateComparison()">
-                    <option value="">Select Block 2</option>
-                </select>
-            </div>
-        </div>
-        <div class="comparison-content">
-            <div class="comparison-previews">
-                <div id="preview1" class="block-preview"></div>
-                <div id="preview2" class="block-preview"></div>
-            </div>
-            <div class="comparison-details"></div>
         </div>
     </div>
 
@@ -519,6 +389,7 @@
 
             // Initialize project list
             updateProjectList();
+            initializeDropZones();
         });        
         
         function showCredits() {
@@ -529,8 +400,13 @@
             document.getElementById('creditsPopup').style.display = 'none';
         }
 
-        function selectBlock(typeargs, generalargs) {
-            renderAttributes({ typeargs, generalargs, name: `New ${typeargs}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, spread: 0, projectileSize: 1, roundsPerBurst: 1, burstiness: 0, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower: 5, lasercolor: "#ffffff", turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 30000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000", density: 1, shroudsize: 2, shroudoffset: "{0,0,0}", shroudtaper: 1, shroudshape: "SQUARE", tractorRange: 500});
+        function selectBlock(type) {
+            // Don't process block selection if in comparison mode
+            if (document.getElementById('comparisonPanel').style.display === 'block') {
+                return;
+            }
+            
+            renderAttributes({ typeargs: type, generalargs: '', name: `New ${type}`, shape: "SQUARE", size: 1, id: blocks.length + 1, group: 1, fillColor1: "#d4d4d4", fillColor2: "#959696", lineColor: "#686869", capacity: 0, cannondmg: 20, cannonrounds: 4, cannonrange: 800, cannonvel: 1000, cannonpower: 7, spread: 0, projectileSize: 1, roundsPerBurst: 1, burstiness: 0, laserdmg: 100, laserrange: 700, laserwidth: 2, laserpower: 5, lasercolor: "#ffffff", turreted: "True", health: 1, powerCapacity: 300, generatorCapacityPerSec: 75, faction: 1, thrust: 30000, points: 0, shieldradius: 40, shieldpower: 0, shieldhealth: 300, shieldregen: 100, shielddelay: 2, shieldcolor: "#00ff00", shielddamagedColor: "#ff0000", density: 1, shroudsize: 2, shroudoffset: "{0,0,0}", shroudtaper: 1, shroudshape: "SQUARE", tractorRange: 500});
             updateBlockPreview();
         }
 
@@ -1149,7 +1025,6 @@
             blockList.style.padding = '10px';
             
             blocks.forEach((block, index) => {
-                // Skip if doesn't match search
                 if (searchTerm && !block.name.toLowerCase().includes(searchTerm) && 
                     !block.typeargs.toLowerCase().includes(searchTerm)) {
                     return;
@@ -1164,6 +1039,13 @@
                 button.textContent = `${block.name} (${block.typeargs})`;
                 button.onclick = () => renderAttributes(blocks[index]);
                 button.style.width = '100%';
+                
+                // Add drag functionality
+                button.draggable = true;
+                button.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', block.id);
+                });
+                
                 blockContainer.appendChild(button);
                 
                 const buttonGroup = document.createElement('div');
@@ -1488,6 +1370,7 @@ function updateProjectList() {
 // Initialize project list on page load
 document.addEventListener('DOMContentLoaded', () => {
     updateProjectList();
+    initializeDropZones();
 });
 
 function updateProjectList() {
@@ -1559,6 +1442,7 @@ function showComparison() {
     const comparisonPanel = document.getElementById('comparisonPanel');
     const typeSelectionPanel = document.querySelector('.block-list:not(:last-child)');
     const attributesPanel = document.querySelector('.panel:not(.block-list)');
+    const blockAttributesDiv = document.getElementById('blockattributes');
     
     // Toggle comparison mode
     if (comparisonPanel.style.display === 'block') {
@@ -1570,7 +1454,65 @@ function showComparison() {
         // Clear comparison selections
         document.getElementById('block1Select').value = '';
         document.getElementById('block2Select').value = '';
+        
+        // Reset block attributes to default
+        const defaultBlock = {
+            typeargs: '',
+            generalargs: '',
+            name: '',
+            shape: 'SQUARE',
+            size: 1,
+            id: blocks.length + 1,
+            group: 1,
+            fillColor1: "#d4d4d4",
+            fillColor2: "#959696",
+            lineColor: "#686869",
+            capacity: 0,
+            health: 1,
+            points: 0,
+            density: 1
+        };
+        
+        // Reset the preview and attributes panels
+        if (blockAttributesDiv) {
+            blockAttributesDiv.innerHTML = '<h5>General Attributes</h5>';
+        }
+        
+        // Clear any existing attributes
+        const attributesDiv = document.getElementById('attributes');
+        if (attributesDiv) {
+            attributesDiv.innerHTML = '<h4>Select a Block Type</h4>';
+        }
+        
+        // Properly reset block preview
+        const previewDiv = document.getElementById('blockPreview');
+        if (previewDiv) {
+            previewDiv.style.display = 'block';
+            previewDiv.innerHTML = '';
+            // Reset all preview-related variables and call updateBlockPreview with default state
+            document.querySelector('h4').textContent = 'Select a Block Type';
+            document.querySelector('h5').textContent = 'General Attributes';
+            updateBlockPreview();
+        }
+        
+        // Show all panels that should be visible in create mode
+        document.getElementById('blockattributes').style.display = 'block';
+        document.getElementById('attributes').style.display = 'block';
+        
+        // Force a clean state for the preview
+        setTimeout(() => {
+            if (previewDiv) {
+                updateBlockPreview();
+            }
+        }, 0);
+        
     } else {
+        // Check if there are at least 2 blocks to compare
+        if (blocks.length < 2) {
+            alert('You need at least 2 blocks to use the comparison tool.');
+            return;
+        }
+
         // Switch to comparison mode
         comparisonPanel.style.display = 'block';
         typeSelectionPanel.style.display = 'none';
@@ -1580,11 +1522,11 @@ function showComparison() {
         const container = document.querySelector('.container');
         container.insertBefore(comparisonPanel, document.querySelector('.block-list:last-child'));
         
-        // Populate select boxes
+        // Populate select boxes with only existing blocks, no "Select Block" option
         const select1 = document.getElementById('block1Select');
         const select2 = document.getElementById('block2Select');
-        select1.innerHTML = '<option value="">Select Block 1</option>';
-        select2.innerHTML = '<option value="">Select Block 2</option>';
+        select1.innerHTML = '';
+        select2.innerHTML = '';
         
         blocks.forEach(block => {
             const option1 = document.createElement('option');
@@ -1594,6 +1536,16 @@ function showComparison() {
             select1.appendChild(option1);
             select2.appendChild(option2.cloneNode(true));
         });
+
+        // Select first block by default for each dropdown
+        if (blocks.length > 0) {
+            select1.value = blocks[0].id;
+            select2.value = blocks.length > 1 ? blocks[1].id : blocks[0].id;
+            updateComparison();
+        }
+        
+        // Initialize drop zones when comparison panel is shown
+        initializeDropZones();
     }
 }
 
@@ -1611,25 +1563,45 @@ function updateComparison() {
     const preview2 = document.getElementById('preview2');
     
     // Create temporary elements to use existing preview function
-    const tempDiv = document.createElement('div');
-    tempDiv.id = 'blockPreview';
+    const tempPreviewDiv = document.createElement('div');
+    tempPreviewDiv.id = 'blockPreview';
+    
+    // Save original preview div if it exists
+    const originalPreviewDiv = document.getElementById('blockPreview');
+    const originalParent = originalPreviewDiv ? originalPreviewDiv.parentNode : null;
+    const originalNextSibling = originalPreviewDiv ? originalPreviewDiv.nextSibling : null;
+    
+    // Temporarily disable normal block selection
+    const originalSelectBlock = window.selectBlock;
+    window.selectBlock = () => {};
     
     // Preview block 1
-    document.getElementById('blockPreview').replaceWith(tempDiv);
+    if (originalPreviewDiv) {
+        originalPreviewDiv.replaceWith(tempPreviewDiv);
+    }
     renderAttributes(block1);
     preview1.innerHTML = document.getElementById('blockPreview').innerHTML;
     
     // Preview block 2
-    document.getElementById('blockPreview').replaceWith(tempDiv.cloneNode(true));
     renderAttributes(block2);
     preview2.innerHTML = document.getElementById('blockPreview').innerHTML;
     
-    // Restore original preview div
-    document.getElementById('blockPreview').replaceWith(tempDiv);
+    // Restore original preview div and selectBlock function
+    if (originalParent) {
+        tempPreviewDiv.replaceWith(originalPreviewDiv);
+    }
+    window.selectBlock = originalSelectBlock;
     
     // Compare and display differences
     const comparisonDetails = document.querySelector('.comparison-details');
     comparisonDetails.innerHTML = generateComparisonTable(block1, block2);
+    
+    // Ensure comparison panel stays visible
+    document.getElementById('comparisonPanel').style.display = 'block';
+    
+    // Keep type selection and attributes panels hidden
+    document.querySelector('.block-list:not(:last-child)').style.display = 'none';
+    document.querySelector('.panel:not(.block-list):not(.comparison-panel)').style.display = 'none';
 }
 
 function calculateDPS(block) {
@@ -1748,6 +1720,34 @@ function generateComparisonTable(block1, block2) {
     
     html += '</table>';
     return html;
+}
+
+function initializeDropZones() {
+    const dropZones = ['dropZone1', 'dropZone2'];
+    const selects = ['block1Select', 'block2Select'];
+    
+    dropZones.forEach((zoneId, index) => {
+        const zone = document.getElementById(zoneId);
+        const select = document.getElementById(selects[index]);
+        
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.classList.add('drag-over');
+        });
+        
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('drag-over');
+        });
+        
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            
+            const blockId = e.dataTransfer.getData('text/plain');
+            select.value = blockId;
+            updateComparison();
+        });
+    });
 }
 
 </script>
