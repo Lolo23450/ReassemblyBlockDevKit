@@ -198,7 +198,7 @@
             padding: 10px;
             background-color: rgb(204, 202, 202);
             color: black;
-            border: none;
+            border: 1px solid #ccc;
             border-radius: 5px;
             cursor: pointer;
         }
@@ -250,7 +250,6 @@
         .dark-mode .comparison-panel { background-color: #1a1a1a; border-color: #333; }
         .dark-mode .comparison-table th,
         .dark-mode .comparison-table td { border-color: #333; }
-        /* ... existing comparison styles ... */
         .comparison-table tr.higher-dps { background-color: #d4edda; }
         .comparison-table tr.lower-dps { background-color: #f8d7da; }
         .dark-mode .comparison-table tr.higher-dps { background-color: #1e3320; }
@@ -271,6 +270,7 @@
 </head>
 <body>
 
+    <!-- Header -->
     <h1>Reassembly Block Development Kit</h1>
     <button id="tutorialBtn" onclick="showTutorial()" style="background: #007BFF; color: white; margin-right: 10px;">Tutorial</button>
     <button id="creditsBtn" onclick="showCredits()">Credits</button>
@@ -296,12 +296,14 @@
         </div>
     </div>
 
+    <!-- Credits -->
     <div id="creditsPopup">
         <h2>Credits</h2>
         <p>Developed by: Lolo</p>
-        <p>Contributors: ChatGPT, Copilot, ClickerAI (Claude)</p>
+        <p>Contributors: ChatGPT, Copilot, ClickerAI (ClaudeAI)</p>
         <button id="closeCredits" onclick="closeCredits()">Close</button>
     </div>
+
     <input type="text" id="searchInput" placeholder="Search blocks..." oninput="filterBlocks()">
     <div class="container">
         <div class="panel block-list">
@@ -2081,5 +2083,4 @@
 
 </script>
 </body>
-
 </html>
