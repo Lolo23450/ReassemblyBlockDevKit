@@ -7,7 +7,7 @@
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; background: white; color: black; transition: background 0.3s, color 0.3s; }
         .container { display: flex; }
-        .panel { width: 50%; padding: 10px; border: 1px solid #c0bcbc; margin-right: 10px; background: white; transition: background 0.3s; }
+        .panel { width: 50%; padding: 10px; border: 1px solid #bebdbd; margin-right: 10px; background: rgb(218, 215, 215); transition: background 0.3s; }
         .block-list button { display: block; margin: 6px; padding: 10px; width: 97%; transition: background 0.25s, color 0.25s; }
         .attribute-section { margin-top: 10px; }
         label { width: 97%; display: inline-block; margin-top: 2px; margin-bottom: 2px; }
@@ -43,26 +43,8 @@
             width: 200px;
         }
 
-        .styled-button {
-            padding: 8px 16px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
-        }
-
         .styled-button:hover {
             background-color: #0056b3;
-        }
-
-        .styled-select {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
         }
 
         .delete-button {
@@ -94,7 +76,7 @@
         }
 
         .project-manager-panel {
-            background-color: #ffffff;
+            background-color: rgb(218, 215, 215);
             padding: 20px;
             border-bottom: 2px solid #666;
             margin-bottom: 20px;
@@ -173,7 +155,7 @@
 
         #blockStatisticsPanel {
             padding: 20px;
-            background-color: #f4f4f4;
+            background-color: rgb(218, 215, 215);;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
@@ -196,7 +178,7 @@
         button {
             margin-top: 20px;
             padding: 10px;
-            background-color: rgb(204, 202, 202);
+            background-color: rgb(255, 255, 255);
             color: black;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -230,12 +212,11 @@
         #closeTutorial { position: absolute; top: 10px; right: 10px; background: #FF4136; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 999; }
         /* Normal preview styles */
-        #blockPreview { width: 200px; height: 200px; border: 2px solid #ccc; margin: 10px 0; position: relative; z-index: 1; }
+        #blockPreview { width: 200px; height: 200px; border: 2px solid #a8a7a7; margin: 10px 0; position: relative; z-index: 1; }
         #blockPreview .preview-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
         /* Comparison preview styles */
         .comparison-previews .block-preview { width: 200px; height: 200px; border: 2px solid #ccc; margin: 10px; position: relative; }
         .comparison-previews .preview-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        /* Common styles */
         .preview-shape { width: 100%; height: 100%; transition: all 0.3s ease; }
         .dark-mode #blockPreview,
         .dark-mode .comparison-previews .block-preview { border-color: #666; }
