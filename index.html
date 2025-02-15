@@ -399,15 +399,18 @@
             <h4>Step 3: Managing Blocks</h4>
             <p>- Use the search bar to filter blocks<br>
             - Click on existing blocks to edit them<br>
-            - Use "Clone" to duplicate blocks<br>
-            - Use "Delete" to remove blocks</p>
+            - Use the "Clone" button to duplicate blocks<br>
+            - Use the "Delete" button to remove blocks</p>
+            - Use the "Stats" button to see the stats of a block</p>
         </div>
 
         <div class="tutorial-step">
             <h4>Step 4: Shrouds</h4>
-            <p>1. Click on the "Shrouds" button<br>
-            2. Select a block to add a shroud to it<br>
+            <p>1. Select a block<br>
+            2. Click on the "Add Shroud" button<br>
             3. Adjust the shroud size, offset, and taper<p>
+            4. Click on the "Add Shroud" button again to add another shroud<br>
+            5. Repeat until you have the desired number of shrouds</p>
         </div>
 
         <div class="tutorial-step">
@@ -415,6 +418,8 @@
             <p>1. Click on the "Fragments" button<br>
             2. Select a block to add a fragment to it<br>
             3. Adjust the fragment damage, velocity, range, spread, rounds per burst, etc<p>
+            4. Click on the "Add Fragment" button again to add another fragment to the fragment<br>
+            5. Repeat until you have the desired number of fragments</p>
         </div>
 
         <div class="tutorial-step">
@@ -429,15 +434,16 @@
             <h4>Step 7: Exporting</h4>
 
             <p>- Click "Export blocks.lua" to save your blocks as a Lua file<br>
-            - Place the exported file in your Reassembly mods folder<br>
-            - The default path is: users/username/Saved Games/Reassembly/mods/</p>
-
+            - Place the exported file in a new folder inside your Reassembly mods folder<br>
+            - The local mods path is: users/your_username/Saved Games/Reassembly/mods/</p>
+            <p>Example: users/lolo/Saved Games/Reassembly/mods/my_mod/</p>
         </div>
 
         <div class="tutorial-step">
             <h4>Tips</h4>
             <p>- Use dark/light mode toggle for better visibility<br>
             - Save your work frequently<br>
+            - Enable autosave to automatically save your work every 5 minutes<br>
             - Make backup copies of important projects</p>
         </div>
     </div>
@@ -1597,7 +1603,7 @@
             autosaveInterval = setInterval(() => {
                 saveProject();
                 console.log(`Project "${projectName}" autosaved.`);
-            }, 240000); // Autosave every 2 minutes
+            }, 300000); // Autosave every 5 minutes
         }
 
         // Function to stop the autosave feature
