@@ -6,28 +6,40 @@
     <title>Reassembly Block Development Kit</title>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; background: white; color: black; transition: background 0.3s, color 0.3s; }
+
+        /* Main Container styles */
         .container { display: flex; }
+        /* Container Panel styles */
         .panel { width: 50%; padding: 10px; border: 1px solid #bebdbd; margin-right: 10px; background: rgb(218, 215, 215); transition: background 0.3s; }
         .block-list button { display: block; margin: 6px; padding: 10px; width: 97%; transition: background 0.25s, color 0.25s; }
         .attribute-section { margin-top: 10px; }
         label { width: 97%; display: inline-block; margin-top: 2px; margin-bottom: 2px; }
         input, select { width: 100%; padding: 3px; margin-bottom: 3px; }
+
+        /* Search Input style */
         #searchInput { margin-bottom: 10px; padding: 5px; width: 95%; }
+
+        /* Utility Button styles */
         #exportBtn, #creditsBtn, #loadBtn, #darkModeBtn, #clearStorageBtn, #tutorialBtn, #compareBtn, #fullScreenBtn { margin-top: 10px; padding: 10px; background: green; color: white; border: none; cursor: pointer; }        
         #creditsBtn { background: blue; }
         #loadBtn { background-color: green; }
         #darkModeBtn { background-color: blue; }
         #clearStorageBtn { background-color: red; }
         #fullScreenBtn { background-color: blue; }
+
+        /* Credits Popup styles */
         #creditsPopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid black; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); z-index: 1000; }
         #closeCredits { margin-top: 10px; padding: 5px; background: red; color: white; border: none; cursor: pointer; }
         
         /* Dark Mode Styles */
         body.dark-mode { background: #1e1e1e; color: white; }
+        /* Uncomment if you want to use dark mode for attribute inputs */
         /* input.dark-mode, select { width: 100%; padding: 5px; margin-bottom: 5px; background: #1e1e1e; color: white; transition: background 0.25s, color 0.25s; } */
         .panel.dark-mode { background: #333; border-color: #666; }
         .block-list.dark-mode button { display: block; margin: 6px; padding: 10px; width: 97%; background: #1e1e1e; color: white;}
         .dark-mode #creditsPopup {display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e1e1e; padding: 20px; border: 1px solid black; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); }
+
+        /* Project Manager Panel styles */
         .project-controls {
             margin: 20px 0;
             display: flex;
@@ -35,33 +47,7 @@
             align-items: center;
         }
 
-        #projectName {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-            width: 200px;
-        }
-
-        .styled-button:hover {
-            background-color: #0056b3;
-        }
-
-        .delete-button {
-            background-color: #FF4136;
-        }
-
-        .delete-button:hover {
-            background-color: #C0392B;
-        }
-
-        .styled-checkbox {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
+        /* Styled Checkbox style */
         .styled-checkbox input[type="checkbox"] {
             margin-right: 5px;
             width: 16px;
@@ -69,12 +55,14 @@
             cursor: pointer;
         }
 
+        /* Header 1 style */
         h1 {
             margin-bottom: 20px;
             border-bottom: 2px solid #ccc;
             padding-bottom: 10px;
         }
 
+        /* Project Manager Panel styles */
         .project-manager-panel {
             background-color: rgb(218, 215, 215);
             padding: 20px;
@@ -91,10 +79,7 @@
             transition: background 0.25s, color 0.25s; 
         }
 
-        .project-manager-panel h2 {
-            margin-top: 0;
-        }
-
+        /* Project Controls style */
         .project-controls {
             display: flex;
             gap: 10px;
@@ -109,6 +94,7 @@
             width: 200px;
         }
 
+        /* Styled Button styles (Project Manager Panel Buttton)*/
         .styled-button {
             padding: 8px 16px;
             background-color: #007BFF;
@@ -124,6 +110,7 @@
             background-color: #0056b3;
         }
 
+        /* Styled Select Project Input style */
         .styled-select {
             padding: 8px;
             border: 1px solid #ccc;
@@ -131,6 +118,7 @@
             font-size: 14px;
         }
 
+        /* Delete Project button styles */
         .delete-button {
             background-color: #FF4136;
         }
@@ -139,20 +127,7 @@
             background-color: #C0392B;
         }
 
-        .styled-checkbox {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .styled-checkbox input[type="checkbox"] {
-            margin-right: 5px;
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
-
+        /* Block Statistics Panel styles */
         #blockStatisticsPanel {
             padding: 20px;
             background-color: rgb(218, 215, 215);;
@@ -171,10 +146,12 @@
             gap: 2px;
         }
 
+        /* Header 4 style */
         h4 {
             margin-top: 20px;
         }
 
+        /* Button style */
         button {
             margin-top: 20px;
             padding: 10px;
@@ -187,6 +164,7 @@
             background-color: #bbbbbb;
         }
 
+        /* Dark mode styles */
         body.dark-mode #blockStatisticsPanel {
             background-color: #333;
             color: #ddd;
@@ -208,7 +186,7 @@
         .tutorial-step h4 { margin-top: 0; color: #007BFF; }
         #closeTutorial { position: absolute; top: 10px; right: 10px; background: #FF4136; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 999; }
-        /* Normal preview styles */
+        /* Preview styles */
         #blockPreview { width: 200px; height: 200px; border: 2px solid #a8a7a7; margin: 10px 0; position: relative; z-index: 1; }
         #blockPreview .preview-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
         /* Comparison preview styles */
